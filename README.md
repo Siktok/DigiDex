@@ -69,3 +69,4 @@ Context/digi-api.openapi.yaml
 - Detalle de Digimon por ID.
 - Imagenes, niveles, tipos, atributos, campos, habilidades y evoluciones cuando Digi-API los devuelve.
 - Estados de carga, error y resultados vacios.
+- Interfaz responsive con controles alineados, tarjetas visuales y lista compacta.

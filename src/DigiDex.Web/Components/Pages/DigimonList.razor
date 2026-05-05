@@ -10,27 +10,36 @@
 <PageTitle>Digimon - DigiDex</PageTitle>
 
 <div class="page-header">
-    <div>
+    <div class="hero-copy">
         <p class="eyebrow">DigiDex</p>
         <h1>Digimon</h1>
-        <p>Explora, busca y abre el detalle de cualquier Digimon desde Digi-API.</p>
+        <p class="hero-subtitle">Enciclopedia visual para recorrer Digimon, evoluciones y detalles.</p>
     </div>
-    <div class="header-stat">
-        <strong>@TotalResultsLabel</strong>
-        <span>resultados</span>
+    <div class="hero-metrics" aria-label="Resumen del listado">
+        <div class="metric-card">
+            <span>Resultados</span>
+            <strong>@TotalResultsLabel</strong>
+        </div>
+        <div class="metric-card metric-card-accent">
+            <span>Vista</span>
+            <strong>@CurrentModeLabel</strong>
+        </div>
     </div>
 </div>
 
 <section class="toolbar">
     <DigimonSearchBox Value="@_searchTerm" OnSearch="SearchAsync" />
 
-    <div class="view-toggle" aria-label="Modo de vista">
-        <button class="@GetModeButtonClass(ListDisplayMode.Cards)" type="button" @onclick="() => ChangeModeAsync(ListDisplayMode.Cards)">
-            Tarjetas
-        </button>
-        <button class="@GetModeButtonClass(ListDisplayMode.FullList)" type="button" @onclick="() => ChangeModeAsync(ListDisplayMode.FullList)">
-            Lista completa
-        </button>
+    <div class="view-control">
+        <span class="control-label">Vista</span>
+        <div class="view-toggle" aria-label="Modo de vista">
+            <button class="@GetModeButtonClass(ListDisplayMode.Cards)" type="button" @onclick="() => ChangeModeAsync(ListDisplayMode.Cards)">
+                Tarjetas
+            </button>
+            <button class="@GetModeButtonClass(ListDisplayMode.FullList)" type="button" @onclick="() => ChangeModeAsync(ListDisplayMode.FullList)">
+                Lista completa
+            </button>
+        </div>
     </div>
 </section>
 
@@ -98,6 +107,8 @@ else
     private string TotalResultsLabel => _displayMode == ListDisplayMode.FullList
         ? _allDigimon.Count.ToString()
         : (_digimonPage?.TotalElements ?? 0).ToString();
+
+    private string CurrentModeLabel => _displayMode == ListDisplayMode.FullList ? "Lista" : "Tarjetas";
 
     protected override Task OnInitializedAsync()
     {

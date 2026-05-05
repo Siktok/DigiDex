@@ -19,6 +19,20 @@ y este proyecto sigue [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Security
 
+## [0.2.2] - 2026-05-05
+
+### Fixed
+
+- Corregido el desbordamiento de imagenes en tarjetas, lista y detalle para evitar superposiciones con el contenido.
+
+## [0.2.1] - 2026-05-05
+
+### Changed
+
+- Refinada la interfaz visual del listado y detalle para una experiencia mas actual.
+- Alineados buscador y selector de vista dentro de una barra de controles consistente.
+- Mejorada la jerarquia visual del banner, tarjetas, lista completa, estados y pagina de detalle.
+
 ## [0.2.0] - 2026-05-05
 
 ### Added
