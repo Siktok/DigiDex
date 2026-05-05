@@ -41,16 +41,8 @@ h1:focus {
     opacity: 0.55;
 }
 
-.page-header,
-.home-panel {
+.page-header {
     margin-bottom: 1.5rem;
-}
-
-.home-panel {
-    display: grid;
-    align-items: center;
-    min-height: 48vh;
-    max-width: 760px;
 }
 
 .eyebrow {
@@ -86,7 +78,7 @@ h1:focus {
 .search-box-row {
     display: grid;
     gap: 0.75rem;
-    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-columns: minmax(0, 1fr) auto;
 }
 
 .form-control {
@@ -158,6 +150,11 @@ h1:focus {
 .digimon-number,
 .muted {
     color: #6f7785;
+}
+
+.digimon-number {
+    font-size: 0.95rem;
+    font-weight: 800;
 }
 
 .state-panel {

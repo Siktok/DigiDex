@@ -16,9 +16,11 @@ DigiDex es un MVP de aprendizaje para consultar Digimon desde Digi-API con .NET 
 
 La aplicacion usa Blazor Web App con renderizado Interactive Server. Los componentes Razor son responsables de la UI y sus estados, mientras que el acceso HTTP queda encapsulado en `IDigiApiClient` y `DigiApiClient`.
 
+La pantalla principal es el listado de Digimon, disponible en `/` y `/digimon`. No se mantiene una pagina de inicio separada ni una barra lateral de navegacion porque el MVP solo tiene un flujo principal.
+
 La estructura separa:
 
-- `Components/Pages`: paginas con rutas.
+- `Components/Pages`: paginas con rutas. El listado de Digimon es la entrada principal.
 - `Components/Digimon`: componentes reutilizables de dominio.
 - `Components/Shared`: estados comunes de carga, error y vacio.
 - `Models/Api`: DTOs tolerantes con la forma de Digi-API.
@@ -39,7 +41,7 @@ Interactive Server permite construir el MVP con interactividad, menor complejida
 
 ## Impacto
 
-La aplicacion queda compilable, con navegacion basica y preparada para agregar filtros, favoritos o tests sin rehacer la estructura.
+La aplicacion queda compilable, con un flujo directo hacia el listado y preparada para agregar filtros, favoritos o tests sin rehacer la estructura.
 
 ## Mantenimiento
 

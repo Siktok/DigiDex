@@ -1,3 +1,4 @@
+@page "/"
 @page "/digimon"
 @rendermode InteractiveServer
 @using DigiDex.Web.Options
@@ -55,6 +56,7 @@ else
     private string? _errorMessage;
     private string? _searchTerm;
     private int _currentPage;
+    private int _loadVersion;
 
     private int PageSize => Options.Value.DefaultPageSize;
 
@@ -65,7 +67,14 @@ else
 
     private async Task SearchAsync(string? term)
     {
-        _searchTerm = term;
+        var normalizedTerm = string.IsNullOrWhiteSpace(term) ? null : term.Trim();
+
+        if (string.Equals(_searchTerm, normalizedTerm, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        _searchTerm = normalizedTerm;
         await LoadPageAsync(0);
     }
 
@@ -81,31 +90,51 @@ else
 
     private async Task LoadPageAsync(int page)
     {
+        var loadVersion = ++_loadVersion;
         _isLoading = true;
         _errorMessage = null;
 
         try
         {
-            _digimonPage = await DigiApiClient.GetDigimonPageAsync(
+            var digimonPage = await DigiApiClient.GetDigimonPageAsync(
                 page,
                 PageSize,
                 _searchTerm);
 
+            if (loadVersion != _loadVersion)
+            {
+                return;
+            }
+
+            _digimonPage = digimonPage;
             _currentPage = _digimonPage.CurrentPage;
         }
         catch (DigiApiException exception)
         {
+            if (loadVersion != _loadVersion)
+            {
+                return;
+            }
+
             _digimonPage = null;
             _errorMessage = exception.Message;
         }
         catch
         {
+            if (loadVersion != _loadVersion)
+            {
+                return;
+            }
+
             _digimonPage = null;
             _errorMessage = "No se pudieron cargar los Digimon. Intentalo de nuevo.";
         }
         finally
         {
-            _isLoading = false;
+            if (loadVersion == _loadVersion)
+            {
+                _isLoading = false;
+            }
         }
     }
 }

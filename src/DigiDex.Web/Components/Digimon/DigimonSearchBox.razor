@@ -1,3 +1,5 @@
+@implements IDisposable
+
 <form class="search-box" @onsubmit="SubmitAsync" @onsubmit:preventDefault>
     <label for="digimon-search">Buscar por nombre</label>
     <div class="search-box-row">
@@ -5,14 +7,16 @@
                class="form-control"
                value="@_currentValue"
                @oninput="OnInput"
-               placeholder="Agumon, Patamon, Tailmon..." />
-        <button class="btn btn-primary" type="submit">Buscar</button>
+               placeholder="Escribe" />
         <button class="btn btn-secondary" type="button" @onclick="ClearAsync" disabled="@string.IsNullOrWhiteSpace(_currentValue)">Limpiar</button>
     </div>
 </form>
 
 @code {
+    private const int SearchDelayMilliseconds = 350;
+
     private string? _currentValue;
+    private CancellationTokenSource? _debounceCts;
 
     [Parameter]
     public string? Value { get; set; }
@@ -28,16 +32,41 @@
     private void OnInput(ChangeEventArgs args)
     {
         _currentValue = args.Value?.ToString();
+        _debounceCts?.Cancel();
+        _debounceCts?.Dispose();
+        _debounceCts = new CancellationTokenSource();
+
+        _ = SearchAfterDelayAsync(_currentValue, _debounceCts.Token);
     }
 
     private Task SubmitAsync()
     {
+        _debounceCts?.Cancel();
         return OnSearch.InvokeAsync(string.IsNullOrWhiteSpace(_currentValue) ? null : _currentValue.Trim());
     }
 
     private async Task ClearAsync()
     {
+        _debounceCts?.Cancel();
         _currentValue = null;
         await OnSearch.InvokeAsync(null);
+    }
+
+    private async Task SearchAfterDelayAsync(string? value, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await Task.Delay(SearchDelayMilliseconds, cancellationToken);
+            await InvokeAsync(() => OnSearch.InvokeAsync(string.IsNullOrWhiteSpace(value) ? null : value.Trim()));
+        }
+        catch (OperationCanceledException)
+        {
+        }
+    }
+
+    public void Dispose()
+    {
+        _debounceCts?.Cancel();
+        _debounceCts?.Dispose();
     }
 }
