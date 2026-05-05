@@ -1,0 +1,135 @@
+@page "/digimon/{Id:int}"
+@rendermode InteractiveServer
+@using DigiDex.Web.Services
+@inject IDigiApiClient DigiApiClient
+
+<PageTitle>@PageTitleText</PageTitle>
+
+@if (_isLoading)
+{
+    <LoadingSpinner Message="Cargando detalle..." />
+}
+else if (!string.IsNullOrWhiteSpace(_errorMessage))
+{
+    <ErrorMessage Message="_errorMessage" />
+    <a class="btn btn-secondary" href="/digimon">Volver al listado</a>
+}
+else if (_notFound)
+{
+    <EmptyState Title="Digimon no encontrado" Message="Digi-API no devolvio ningun Digimon con ese identificador." />
+    <a class="btn btn-secondary" href="/digimon">Volver al listado</a>
+}
+else if (_digimon is not null)
+{
+    <a class="back-link" href="/digimon">Volver al listado</a>
+
+    <section class="digimon-detail">
+        <div class="detail-media">
+            @if (!string.IsNullOrWhiteSpace(_digimon.PrimaryImageUrl))
+            {
+                <img src="@_digimon.PrimaryImageUrl" alt="@_digimon.Name" />
+            }
+            else
+            {
+                <span class="image-placeholder">Sin imagen</span>
+            }
+        </div>
+
+        <div class="detail-content">
+            <p class="eyebrow">#@_digimon.Id</p>
+            <h1>@_digimon.Name</h1>
+
+            @if (_digimon.XAntibody)
+            {
+                <span class="badge">X-Antibody</span>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(_digimon.PrimaryDescription))
+            {
+                <p class="lead">@_digimon.PrimaryDescription</p>
+            }
+
+            <dl class="metadata-grid">
+                <div>
+                    <dt>Niveles</dt>
+                    <dd>@FormatList(_digimon.Levels)</dd>
+                </div>
+                <div>
+                    <dt>Tipos</dt>
+                    <dd>@FormatList(_digimon.Types)</dd>
+                </div>
+                <div>
+                    <dt>Atributos</dt>
+                    <dd>@FormatList(_digimon.Attributes)</dd>
+                </div>
+                <div>
+                    <dt>Campos</dt>
+                    <dd>@FormatList(_digimon.Fields)</dd>
+                </div>
+                <div>
+                    <dt>Lanzamiento</dt>
+                    <dd>@(_digimon.ReleaseDate ?? "Sin dato")</dd>
+                </div>
+            </dl>
+        </div>
+    </section>
+
+    @if (_digimon.Skills.Count > 0)
+    {
+        <section class="detail-section">
+            <h2>Habilidades</h2>
+            <ul class="skill-list">
+                @foreach (var skill in _digimon.Skills)
+                {
+                    <li>@skill</li>
+                }
+            </ul>
+        </section>
+    }
+
+    <DigimonEvolutionChain PriorEvolutions="_digimon.PriorEvolutions" NextEvolutions="_digimon.NextEvolutions" />
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private DigimonDetailViewModel? _digimon;
+    private bool _isLoading;
+    private bool _notFound;
+    private string? _errorMessage;
+
+    private string PageTitleText => _digimon is null ? "Detalle - DigiDex" : $"{_digimon.Name} - DigiDex";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _isLoading = true;
+        _notFound = false;
+        _errorMessage = null;
+
+        try
+        {
+            _digimon = await DigiApiClient.GetDigimonByIdAsync(Id);
+            _notFound = _digimon is null;
+        }
+        catch (DigiApiException exception)
+        {
+            _digimon = null;
+            _errorMessage = exception.Message;
+        }
+        catch
+        {
+            _digimon = null;
+            _errorMessage = "No se pudo cargar el detalle del Digimon. Intentalo de nuevo.";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private static string FormatList(IReadOnlyList<string> values)
+    {
+        return values.Count == 0 ? "Sin dato" : string.Join(", ", values);
+    }
+}

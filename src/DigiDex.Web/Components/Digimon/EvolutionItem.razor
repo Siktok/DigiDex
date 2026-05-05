@@ -1,0 +1,20 @@
+@using DigiDex.Web.Models.ViewModels
+
+<a class="evolution-item" href="/digimon/@Evolution.Id">
+    @if (!string.IsNullOrWhiteSpace(Evolution.ImageUrl))
+    {
+        <img src="@Evolution.ImageUrl" alt="@Evolution.Name" loading="lazy" />
+    }
+    <span>
+        <strong>@Evolution.Name</strong>
+        @if (!string.IsNullOrWhiteSpace(Evolution.Condition))
+        {
+            <small>@Evolution.Condition</small>
+        }
+    </span>
+</a>
+
+@code {
+    [Parameter, EditorRequired]
+    public DigimonEvolutionViewModel Evolution { get; set; } = default!;
+}

@@ -1,0 +1,12 @@
+<div class="state-panel state-panel-error" role="alert">
+    <strong>@Title</strong>
+    <p>@Message</p>
+</div>
+
+@code {
+    [Parameter]
+    public string Title { get; set; } = "Algo ha fallado";
+
+    [Parameter]
+    public string Message { get; set; } = "No se pudo completar la operacion. Intentalo de nuevo.";
+}

@@ -1,0 +1,811 @@
+openapi: 3.1.0
+info:
+  title: Digi-API
+  version: "1.0.0"
+  summary: Especificación OpenAPI no oficial para Digi-API.
+  description: |
+    Especificación OpenAPI no oficial generada a partir de la documentación pública de Digi-API.
+
+    Base pública documentada: https://digi-api.com/api/v1/
+
+    Notas:
+    - La API documenta identificadores por `id` o `name` en la misma posición de path.
+      Por eso `identifier` se modela como `string`, aunque pueda contener un número.
+    - La documentación pública parece tener invertidos algunos textos entre endpoints de detalle
+      y endpoints de lista para `level`, `type` y `skill`. Esta especificación usa el patrón REST
+      coherente observado en `digimon`, `attribute` y `field`: colección en `/resource` y detalle
+      en `/resource/{identifier}`.
+    - Algunos esquemas incluyen `additionalProperties: true` para evitar que los clientes generados
+      sean demasiado frágiles ante campos adicionales de la API.
+  contact:
+    name: Digi-API
+    url: https://digi-api.com/
+  license:
+    name: Public documentation; Digimon media belongs to Bandai.
+servers:
+  - url: https://digi-api.com/api/v1
+    description: Digi-API production server
+
+tags:
+  - name: Digimon
+    description: Operaciones de consulta de Digimon.
+  - name: Attributes
+    description: Operaciones de consulta de atributos.
+  - name: Fields
+    description: Operaciones de consulta de campos.
+  - name: Levels
+    description: Operaciones de consulta de niveles.
+  - name: Types
+    description: Operaciones de consulta de tipos.
+  - name: Skills
+    description: Operaciones de consulta de habilidades.
+
+paths:
+  /digimon:
+    get:
+      tags:
+        - Digimon
+      operationId: listDigimon
+      summary: Obtener lista paginada de Digimon.
+      description: Devuelve una lista paginada de Digimon. Permite búsqueda y filtrado por varios criterios.
+      parameters:
+        - $ref: "#/components/parameters/DigimonNameQuery"
+        - $ref: "#/components/parameters/ExactQuery"
+        - $ref: "#/components/parameters/AttributeQuery"
+        - $ref: "#/components/parameters/XAntibodyQuery"
+        - $ref: "#/components/parameters/LevelQuery"
+        - $ref: "#/components/parameters/PageQuery"
+        - $ref: "#/components/parameters/PageSizeQuery"
+      responses:
+        "200":
+          description: Lista paginada de Digimon.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DigimonPage"
+              examples:
+                default:
+                  summary: Ejemplo de respuesta paginada
+                  value:
+                    content:
+                      - id: 1
+                        name: Botamon
+                        href: "https://digi-api.com/api/v1/digimon/1"
+                        image: "https://digi-api.com/images/digimon/w/Botamon.png"
+                    pageable:
+                      currentPage: 0
+                      elementsOnPage: 1
+                      totalElements: 1460
+                      totalPages: 1460
+                      previousPage: ""
+                      nextPage: "https://digi-api.com/api/v1/digimon?page=1"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /digimon/{identifier}:
+    get:
+      tags:
+        - Digimon
+      operationId: getDigimonByIdentifier
+      summary: Obtener un Digimon por id o nombre.
+      description: Devuelve un Digimon con toda su información usando su id numérico o su nombre.
+      parameters:
+        - $ref: "#/components/parameters/IdentifierPath"
+      responses:
+        "200":
+          description: Detalle de un Digimon.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DigimonDetail"
+              examples:
+                wormmon:
+                  summary: Ejemplo abreviado de Wormmon
+                  value:
+                    id: 356
+                    name: Wormmon
+                    xAntibody: false
+                    images:
+                      - href: "https://digi-api.com/images/digimon/w/Wormmon.png"
+                        transparent: false
+                    levels:
+                      - id: 4
+                        level: Child
+                    types:
+                      - id: 59
+                        type: Larva
+                    attributes:
+                      - id: 2
+                        attribute: Free
+                    fields:
+                      - id: 10
+                        field: Jungle Troopers
+                        image: "https://digi-api.com/images/etc/fields/Jungle_Troopers.png"
+                    releaseDate: "2000"
+                    descriptions:
+                      - origin: reference_book
+                        language: en_us
+                        description: "A Larva Digimon with a timid, cowardly personality."
+                    skills:
+                      - id: 1361
+                        skill: Nebaneba Net
+                        translation: Sticky Net
+                        description: "Spits out the threads of a tough, adhesive net."
+                    priorEvolutions:
+                      - id: 71
+                        digimon: Mochimon
+                        condition: ""
+                        image: "https://digi-api.com/images/digimon/w/Mochimon.png"
+                        url: "https://digi-api.com/api/v1/digimon/71"
+                    nextEvolutions:
+                      - id: 2
+                        digimon: Airdramon
+                        condition: ""
+                        image: "https://digi-api.com/images/digimon/w/Airdramon.png"
+                        url: "https://digi-api.com/api/v1/digimon/2"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /attribute:
+    get:
+      tags:
+        - Attributes
+      operationId: listAttributes
+      summary: Obtener lista paginada de atributos.
+      parameters:
+        - $ref: "#/components/parameters/PageQuery"
+        - $ref: "#/components/parameters/NameQuery"
+      responses:
+        "200":
+          description: Lista paginada de atributos.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AttributePage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /attribute/{identifier}:
+    get:
+      tags:
+        - Attributes
+      operationId: getAttributeByIdentifier
+      summary: Obtener atributo por id o nombre.
+      parameters:
+        - $ref: "#/components/parameters/IdentifierPath"
+      responses:
+        "200":
+          description: Detalle de atributo.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AttributeDetail"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /field:
+    get:
+      tags:
+        - Fields
+      operationId: listFields
+      summary: Obtener lista paginada de campos.
+      parameters:
+        - $ref: "#/components/parameters/PageQuery"
+        - $ref: "#/components/parameters/NameQuery"
+      responses:
+        "200":
+          description: Lista paginada de campos.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FieldPage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /field/{identifier}:
+    get:
+      tags:
+        - Fields
+      operationId: getFieldByIdentifier
+      summary: Obtener campo por id o nombre.
+      parameters:
+        - $ref: "#/components/parameters/IdentifierPath"
+      responses:
+        "200":
+          description: Detalle de campo.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FieldDetail"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /level:
+    get:
+      tags:
+        - Levels
+      operationId: listLevels
+      summary: Obtener lista paginada de niveles.
+      parameters:
+        - $ref: "#/components/parameters/PageQuery"
+        - $ref: "#/components/parameters/NameQuery"
+      responses:
+        "200":
+          description: Lista paginada de niveles.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LevelPage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /level/{identifier}:
+    get:
+      tags:
+        - Levels
+      operationId: getLevelByIdentifier
+      summary: Obtener nivel por id o nombre.
+      parameters:
+        - $ref: "#/components/parameters/IdentifierPath"
+      responses:
+        "200":
+          description: Detalle de nivel.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LevelDetail"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /type:
+    get:
+      tags:
+        - Types
+      operationId: listTypes
+      summary: Obtener lista paginada de tipos.
+      parameters:
+        - $ref: "#/components/parameters/PageQuery"
+        - $ref: "#/components/parameters/NameQuery"
+      responses:
+        "200":
+          description: Lista paginada de tipos.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TypePage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /type/{identifier}:
+    get:
+      tags:
+        - Types
+      operationId: getTypeByIdentifier
+      summary: Obtener tipo por id o nombre.
+      parameters:
+        - $ref: "#/components/parameters/IdentifierPath"
+      responses:
+        "200":
+          description: Detalle de tipo.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TypeDetail"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /skill:
+    get:
+      tags:
+        - Skills
+      operationId: listSkills
+      summary: Obtener lista paginada de habilidades.
+      parameters:
+        - $ref: "#/components/parameters/PageQuery"
+        - $ref: "#/components/parameters/NameQuery"
+      responses:
+        "200":
+          description: Lista paginada de habilidades.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SkillPage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /skill/{identifier}:
+    get:
+      tags:
+        - Skills
+      operationId: getSkillByIdentifier
+      summary: Obtener habilidad por id o nombre.
+      parameters:
+        - $ref: "#/components/parameters/IdentifierPath"
+      responses:
+        "200":
+          description: Detalle de habilidad.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SkillDetail"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+components:
+  parameters:
+    IdentifierPath:
+      name: identifier
+      in: path
+      required: true
+      description: Id numérico o nombre del recurso.
+      schema:
+        type: string
+      examples:
+        id:
+          summary: Id numérico
+          value: "356"
+        name:
+          summary: Nombre
+          value: Wormmon
+
+    PageQuery:
+      name: page
+      in: query
+      required: false
+      description: Página que se quiere consultar.
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+
+    PageSizeQuery:
+      name: pageSize
+      in: query
+      required: false
+      description: Cantidad de elementos por página.
+      schema:
+        type: integer
+        minimum: 1
+        default: 20
+
+    NameQuery:
+      name: name
+      in: query
+      required: false
+      description: Devuelve recursos con un nombre similar al valor indicado.
+      schema:
+        type: string
+
+    DigimonNameQuery:
+      name: name
+      in: query
+      required: false
+      description: Devuelve Digimon con nombre similar al valor indicado.
+      schema:
+        type: string
+
+    ExactQuery:
+      name: exact
+      in: query
+      required: false
+      description: Busca coincidencia exacta del valor enviado en el parámetro `name`.
+      schema:
+        type: boolean
+
+    AttributeQuery:
+      name: attribute
+      in: query
+      required: false
+      description: Filtra Digimon por atributo. No distingue mayúsculas y minúsculas.
+      schema:
+        type: string
+
+    XAntibodyQuery:
+      name: xAntibody
+      in: query
+      required: false
+      description: Filtra Digimon según si tienen X-Antibody.
+      schema:
+        type: boolean
+
+    LevelQuery:
+      name: level
+      in: query
+      required: false
+      description: Filtra Digimon por nivel. No distingue mayúsculas y minúsculas.
+      schema:
+        type: string
+
+  responses:
+    BadRequest:
+      description: Solicitud inválida.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+    NotFound:
+      description: Recurso no encontrado.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+    ServerError:
+      description: Error interno o error no controlado del servidor.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+  schemas:
+    ErrorResponse:
+      type: object
+      additionalProperties: true
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        status:
+          type: integer
+
+    Pageable:
+      type: object
+      additionalProperties: true
+      properties:
+        currentPage:
+          type: integer
+          minimum: 0
+        elementsOnPage:
+          type: integer
+          minimum: 0
+        totalElements:
+          type: integer
+          minimum: 0
+        totalPages:
+          type: integer
+          minimum: 0
+        previousPage:
+          type: string
+          format: uri
+        nextPage:
+          type: string
+          format: uri
+
+    DigimonPage:
+      type: object
+      additionalProperties: true
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/DigimonSummary"
+        pageable:
+          $ref: "#/components/schemas/Pageable"
+
+    AttributePage:
+      allOf:
+        - $ref: "#/components/schemas/PagedResponseBase"
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: "#/components/schemas/AttributeSummary"
+
+    FieldPage:
+      allOf:
+        - $ref: "#/components/schemas/PagedResponseBase"
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: "#/components/schemas/FieldSummary"
+
+    LevelPage:
+      allOf:
+        - $ref: "#/components/schemas/PagedResponseBase"
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: "#/components/schemas/LevelSummary"
+
+    TypePage:
+      allOf:
+        - $ref: "#/components/schemas/PagedResponseBase"
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: "#/components/schemas/TypeSummary"
+
+    SkillPage:
+      allOf:
+        - $ref: "#/components/schemas/PagedResponseBase"
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: "#/components/schemas/SkillSummary"
+
+    PagedResponseBase:
+      type: object
+      additionalProperties: true
+      properties:
+        content:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        pageable:
+          $ref: "#/components/schemas/Pageable"
+
+    DigimonSummary:
+      type: object
+      additionalProperties: true
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        href:
+          type: string
+          format: uri
+        image:
+          type: string
+          format: uri
+
+    DigimonDetail:
+      type: object
+      additionalProperties: true
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        xAntibody:
+          type: boolean
+        images:
+          type: array
+          items:
+            $ref: "#/components/schemas/DigimonImage"
+        levels:
+          type: array
+          items:
+            $ref: "#/components/schemas/LevelSummary"
+        types:
+          type: array
+          items:
+            $ref: "#/components/schemas/TypeSummary"
+        attributes:
+          type: array
+          items:
+            $ref: "#/components/schemas/AttributeSummary"
+        fields:
+          type: array
+          items:
+            $ref: "#/components/schemas/FieldSummary"
+        releaseDate:
+          type: string
+          description: Fecha o año de lanzamiento según los datos disponibles.
+        descriptions:
+          type: array
+          items:
+            $ref: "#/components/schemas/DigimonDescription"
+        skills:
+          type: array
+          items:
+            $ref: "#/components/schemas/SkillSummary"
+        priorEvolutions:
+          type: array
+          items:
+            $ref: "#/components/schemas/EvolutionSummary"
+        nextEvolutions:
+          type: array
+          items:
+            $ref: "#/components/schemas/EvolutionSummary"
+
+    DigimonImage:
+      type: object
+      additionalProperties: true
+      properties:
+        href:
+          type: string
+          format: uri
+        transparent:
+          type: boolean
+
+    DigimonDescription:
+      type: object
+      additionalProperties: true
+      properties:
+        origin:
+          type: string
+        language:
+          type: string
+        description:
+          type: string
+
+    EvolutionSummary:
+      type: object
+      additionalProperties: true
+      properties:
+        id:
+          type: integer
+        digimon:
+          type: string
+        condition:
+          type: string
+        image:
+          type: string
+          format: uri
+        url:
+          type: string
+          format: uri
+
+    AttributeSummary:
+      type: object
+      additionalProperties: true
+      properties:
+        id:
+          type: integer
+        attribute:
+          type: string
+        name:
+          type: string
+          description: Campo tolerante por si la lista devuelve `name` en vez de `attribute`.
+        href:
+          type: string
+          format: uri
+
+    AttributeDetail:
+      allOf:
+        - $ref: "#/components/schemas/AttributeSummary"
+        - type: object
+          additionalProperties: true
+          properties:
+            digimon:
+              type: array
+              items:
+                $ref: "#/components/schemas/DigimonSummary"
+
+    FieldSummary:
+      type: object
+      additionalProperties: true
+      properties:
+        id:
+          type: integer
+        field:
+          type: string
+        name:
+          type: string
+          description: Campo tolerante por si la lista devuelve `name` en vez de `field`.
+        image:
+          type: string
+          format: uri
+        href:
+          type: string
+          format: uri
+
+    FieldDetail:
+      allOf:
+        - $ref: "#/components/schemas/FieldSummary"
+        - type: object
+          additionalProperties: true
+          properties:
+            digimon:
+              type: array
+              items:
+                $ref: "#/components/schemas/DigimonSummary"
+
+    LevelSummary:
+      type: object
+      additionalProperties: true
+      properties:
+        id:
+          type: integer
+        level:
+          type: string
+        name:
+          type: string
+          description: Campo tolerante por si la lista devuelve `name` en vez de `level`.
+        href:
+          type: string
+          format: uri
+
+    LevelDetail:
+      allOf:
+        - $ref: "#/components/schemas/LevelSummary"
+        - type: object
+          additionalProperties: true
+          properties:
+            digimon:
+              type: array
+              items:
+                $ref: "#/components/schemas/DigimonSummary"
+
+    TypeSummary:
+      type: object
+      additionalProperties: true
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+        name:
+          type: string
+          description: Campo tolerante por si la lista devuelve `name` en vez de `type`.
+        href:
+          type: string
+          format: uri
+
+    TypeDetail:
+      allOf:
+        - $ref: "#/components/schemas/TypeSummary"
+        - type: object
+          additionalProperties: true
+          properties:
+            digimon:
+              type: array
+              items:
+                $ref: "#/components/schemas/DigimonSummary"
+
+    SkillSummary:
+      type: object
+      additionalProperties: true
+      properties:
+        id:
+          type: integer
+        skill:
+          type: string
+        name:
+          type: string
+          description: Campo tolerante por si la lista devuelve `name` en vez de `skill`.
+        translation:
+          type: string
+        description:
+          type: string
+        href:
+          type: string
+          format: uri
+
+    SkillDetail:
+      allOf:
+        - $ref: "#/components/schemas/SkillSummary"
+        - type: object
+          additionalProperties: true
+          properties:
+            digimon:
+              type: array
+              items:
+                $ref: "#/components/schemas/DigimonSummary"

@@ -1,0 +1,28 @@
+@using DigiDex.Web.Models.ViewModels
+
+<article class="digimon-card">
+    <a class="digimon-card-link" href="@DetailUrl" aria-label="Ver detalle de @Digimon.Name">
+        <div class="digimon-card-image">
+            @if (!string.IsNullOrWhiteSpace(Digimon.ImageUrl))
+            {
+                <img src="@Digimon.ImageUrl" alt="@Digimon.Name" loading="lazy" />
+            }
+            else
+            {
+                <span class="image-placeholder">Sin imagen</span>
+            }
+        </div>
+
+        <div class="digimon-card-body">
+            <span class="digimon-number">#@Digimon.Id</span>
+            <h2>@Digimon.Name</h2>
+        </div>
+    </a>
+</article>
+
+@code {
+    [Parameter, EditorRequired]
+    public DigimonSummaryViewModel Digimon { get; set; } = default!;
+
+    private string DetailUrl => $"/digimon/{Digimon.Id}";
+}

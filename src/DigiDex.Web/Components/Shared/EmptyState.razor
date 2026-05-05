@@ -1,0 +1,12 @@
+<div class="state-panel state-panel-empty">
+    <strong>@Title</strong>
+    <p>@Message</p>
+</div>
+
+@code {
+    [Parameter]
+    public string Title { get; set; } = "Sin resultados";
+
+    [Parameter]
+    public string Message { get; set; } = "No hay elementos para mostrar.";
+}

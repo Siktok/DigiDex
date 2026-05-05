@@ -1,0 +1,111 @@
+@page "/digimon"
+@rendermode InteractiveServer
+@using DigiDex.Web.Options
+@using DigiDex.Web.Services
+@using Microsoft.Extensions.Options
+@inject IDigiApiClient DigiApiClient
+@inject IOptions<DigiApiOptions> Options
+
+<PageTitle>Digimon - DigiDex</PageTitle>
+
+<div class="page-header">
+    <div>
+        <p class="eyebrow">Listado</p>
+        <h1>Digimon</h1>
+    </div>
+</div>
+
+<DigimonSearchBox Value="_searchTerm" OnSearch="SearchAsync" />
+
+@if (_isLoading)
+{
+    <LoadingSpinner Message="Cargando Digimon..." />
+}
+else if (!string.IsNullOrWhiteSpace(_errorMessage))
+{
+    <ErrorMessage Message="_errorMessage" />
+}
+else if (_digimonPage is null || !_digimonPage.HasItems)
+{
+    <EmptyState Title="No hay Digimon" Message="No se encontraron Digimon con los criterios actuales." />
+}
+else
+{
+    <div class="list-summary">
+        <span>Pagina @(_digimonPage.CurrentPage + 1) de @Math.Max(_digimonPage.TotalPages, 1)</span>
+        <span>@_digimonPage.TotalElements resultados</span>
+    </div>
+
+    <DigimonGrid Items="_digimonPage.Items" />
+
+    <nav class="pagination-bar" aria-label="Paginacion de Digimon">
+        <button class="btn btn-secondary" type="button" @onclick="PreviousPageAsync" disabled="@(!_digimonPage.HasPreviousPage || _isLoading)">
+            Anterior
+        </button>
+        <span>Pagina @(_digimonPage.CurrentPage + 1)</span>
+        <button class="btn btn-secondary" type="button" @onclick="NextPageAsync" disabled="@(!_digimonPage.HasNextPage || _isLoading)">
+            Siguiente
+        </button>
+    </nav>
+}
+
+@code {
+    private DigimonListViewModel? _digimonPage;
+    private bool _isLoading;
+    private string? _errorMessage;
+    private string? _searchTerm;
+    private int _currentPage;
+
+    private int PageSize => Options.Value.DefaultPageSize;
+
+    protected override Task OnInitializedAsync()
+    {
+        return LoadPageAsync(0);
+    }
+
+    private async Task SearchAsync(string? term)
+    {
+        _searchTerm = term;
+        await LoadPageAsync(0);
+    }
+
+    private Task PreviousPageAsync()
+    {
+        return LoadPageAsync(Math.Max(_currentPage - 1, 0));
+    }
+
+    private Task NextPageAsync()
+    {
+        return LoadPageAsync(_currentPage + 1);
+    }
+
+    private async Task LoadPageAsync(int page)
+    {
+        _isLoading = true;
+        _errorMessage = null;
+
+        try
+        {
+            _digimonPage = await DigiApiClient.GetDigimonPageAsync(
+                page,
+                PageSize,
+                _searchTerm);
+
+            _currentPage = _digimonPage.CurrentPage;
+        }
+        catch (DigiApiException exception)
+        {
+            _digimonPage = null;
+            _errorMessage = exception.Message;
+        }
+        catch
+        {
+            _digimonPage = null;
+            _errorMessage = "No se pudieron cargar los Digimon. Intentalo de nuevo.";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+}

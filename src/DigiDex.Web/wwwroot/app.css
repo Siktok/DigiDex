@@ -1,0 +1,345 @@
+html,
+body {
+    min-height: 100%;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f6f8fb;
+    color: #18212f;
+}
+
+a {
+    color: #1368aa;
+}
+
+.content {
+    padding-top: 1.25rem;
+}
+
+h1:focus {
+    outline: none;
+}
+
+.btn {
+    border: 0;
+    border-radius: 6px;
+    font-weight: 700;
+    min-height: 2.5rem;
+    padding: 0.55rem 0.9rem;
+}
+
+.btn-primary {
+    background: #1368aa;
+    color: #fff;
+}
+
+.btn-secondary {
+    background: #e6edf4;
+    color: #18212f;
+}
+
+.btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.page-header,
+.home-panel {
+    margin-bottom: 1.5rem;
+}
+
+.home-panel {
+    display: grid;
+    align-items: center;
+    min-height: 48vh;
+    max-width: 760px;
+}
+
+.eyebrow {
+    color: #6f7785;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0;
+    margin: 0 0 0.35rem;
+    text-transform: uppercase;
+}
+
+.lead {
+    color: #4b5565;
+    font-size: 1.1rem;
+    line-height: 1.65;
+    max-width: 760px;
+}
+
+.search-box {
+    background: #fff;
+    border: 1px solid #dde5ef;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    padding: 1rem;
+}
+
+.search-box label {
+    display: block;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+}
+
+.search-box-row {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+}
+
+.form-control {
+    border: 1px solid #cbd6e2;
+    border-radius: 6px;
+    min-height: 2.5rem;
+    padding: 0.55rem 0.75rem;
+    width: 100%;
+}
+
+.list-summary,
+.pagination-bar {
+    align-items: center;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    margin: 1rem 0;
+}
+
+.digimon-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+
+.digimon-card {
+    background: #fff;
+    border: 1px solid #dde5ef;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.digimon-card-link {
+    color: inherit;
+    display: block;
+    height: 100%;
+    text-decoration: none;
+}
+
+.digimon-card-link:hover h2 {
+    color: #1368aa;
+}
+
+.digimon-card-image {
+    align-items: center;
+    aspect-ratio: 1;
+    background: #eef4fa;
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.digimon-card-image img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.digimon-card-body {
+    padding: 0.9rem;
+}
+
+.digimon-card-body h2 {
+    font-size: 1.05rem;
+    line-height: 1.25;
+    margin: 0.2rem 0 0;
+}
+
+.digimon-number,
+.muted {
+    color: #6f7785;
+}
+
+.state-panel {
+    background: #fff;
+    border: 1px solid #dde5ef;
+    border-radius: 8px;
+    margin: 1rem 0;
+    padding: 1rem;
+}
+
+.state-panel p {
+    margin: 0.35rem 0 0;
+}
+
+.state-panel-error {
+    border-color: #efb4b4;
+    background: #fff5f5;
+}
+
+.loading-spinner {
+    animation: spin 0.85s linear infinite;
+    border: 3px solid #cbd6e2;
+    border-top-color: #1368aa;
+    border-radius: 50%;
+    display: inline-block;
+    height: 2rem;
+    margin-right: 0.75rem;
+    vertical-align: middle;
+    width: 2rem;
+}
+
+.state-panel-loading p {
+    display: inline-block;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+
+.digimon-detail {
+    align-items: start;
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
+}
+
+.detail-media {
+    align-items: center;
+    aspect-ratio: 1;
+    background: #fff;
+    border: 1px solid #dde5ef;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    padding: 1.25rem;
+}
+
+.detail-media img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.badge {
+    background: #1f7a68;
+    border-radius: 999px;
+    color: #fff;
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+    padding: 0.3rem 0.6rem;
+}
+
+.metadata-grid {
+    display: grid;
+    gap: 0.85rem;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.metadata-grid div {
+    background: #fff;
+    border: 1px solid #dde5ef;
+    border-radius: 8px;
+    padding: 0.85rem;
+}
+
+.metadata-grid dt {
+    color: #6f7785;
+    font-size: 0.78rem;
+    font-weight: 800;
+    margin-bottom: 0.2rem;
+    text-transform: uppercase;
+}
+
+.metadata-grid dd {
+    margin: 0;
+}
+
+.detail-section {
+    margin-top: 2rem;
+}
+
+.skill-list {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    list-style: none;
+    padding: 0;
+}
+
+.skill-list li,
+.evolution-item {
+    background: #fff;
+    border: 1px solid #dde5ef;
+    border-radius: 8px;
+    padding: 0.75rem;
+}
+
+.evolution-columns {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.evolution-list {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.evolution-item {
+    align-items: center;
+    color: inherit;
+    display: flex;
+    gap: 0.75rem;
+    text-decoration: none;
+}
+
+.evolution-item img {
+    height: 4rem;
+    object-fit: contain;
+    width: 4rem;
+}
+
+.evolution-item small {
+    color: #6f7785;
+    display: block;
+    margin-top: 0.2rem;
+}
+
+.image-placeholder {
+    color: #6f7785;
+    font-weight: 700;
+}
+
+.blazor-error-boundary {
+    background: #b32121;
+    color: white;
+    padding: 1rem;
+}
+
+.blazor-error-boundary::after {
+    content: "Ha ocurrido un error.";
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 720px) {
+    .search-box-row,
+    .digimon-detail,
+    .evolution-columns {
+        grid-template-columns: 1fr;
+    }
+
+    .list-summary,
+    .pagination-bar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+}

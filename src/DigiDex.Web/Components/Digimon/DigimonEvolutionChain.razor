@@ -1,0 +1,51 @@
+@using DigiDex.Web.Models.ViewModels
+
+@if (PriorEvolutions.Count > 0 || NextEvolutions.Count > 0)
+{
+    <section class="detail-section">
+        <h2>Evoluciones</h2>
+        <div class="evolution-columns">
+            <div>
+                <h3>Previas</h3>
+                @if (PriorEvolutions.Count == 0)
+                {
+                    <p class="muted">No hay evoluciones previas registradas.</p>
+                }
+                else
+                {
+                    <div class="evolution-list">
+                        @foreach (var evolution in PriorEvolutions)
+                        {
+                            <EvolutionItem Evolution="evolution" />
+                        }
+                    </div>
+                }
+            </div>
+
+            <div>
+                <h3>Siguientes</h3>
+                @if (NextEvolutions.Count == 0)
+                {
+                    <p class="muted">No hay evoluciones siguientes registradas.</p>
+                }
+                else
+                {
+                    <div class="evolution-list">
+                        @foreach (var evolution in NextEvolutions)
+                        {
+                            <EvolutionItem Evolution="evolution" />
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+@code {
+    [Parameter]
+    public IReadOnlyList<DigimonEvolutionViewModel> PriorEvolutions { get; set; } = [];
+
+    [Parameter]
+    public IReadOnlyList<DigimonEvolutionViewModel> NextEvolutions { get; set; } = [];
+}

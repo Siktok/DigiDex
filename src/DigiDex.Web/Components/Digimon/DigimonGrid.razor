@@ -1,0 +1,13 @@
+@using DigiDex.Web.Models.ViewModels
+
+<div class="digimon-grid">
+    @foreach (var digimon in Items)
+    {
+        <DigimonCard Digimon="digimon" />
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public IReadOnlyList<DigimonSummaryViewModel> Items { get; set; } = [];
+}

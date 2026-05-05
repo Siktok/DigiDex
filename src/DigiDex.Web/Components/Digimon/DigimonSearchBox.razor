@@ -1,0 +1,43 @@
+<form class="search-box" @onsubmit="SubmitAsync" @onsubmit:preventDefault>
+    <label for="digimon-search">Buscar por nombre</label>
+    <div class="search-box-row">
+        <input id="digimon-search"
+               class="form-control"
+               value="@_currentValue"
+               @oninput="OnInput"
+               placeholder="Agumon, Patamon, Tailmon..." />
+        <button class="btn btn-primary" type="submit">Buscar</button>
+        <button class="btn btn-secondary" type="button" @onclick="ClearAsync" disabled="@string.IsNullOrWhiteSpace(_currentValue)">Limpiar</button>
+    </div>
+</form>
+
+@code {
+    private string? _currentValue;
+
+    [Parameter]
+    public string? Value { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> OnSearch { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        _currentValue = Value;
+    }
+
+    private void OnInput(ChangeEventArgs args)
+    {
+        _currentValue = args.Value?.ToString();
+    }
+
+    private Task SubmitAsync()
+    {
+        return OnSearch.InvokeAsync(string.IsNullOrWhiteSpace(_currentValue) ? null : _currentValue.Trim());
+    }
+
+    private async Task ClearAsync()
+    {
+        _currentValue = null;
+        await OnSearch.InvokeAsync(null);
+    }
+}
