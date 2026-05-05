@@ -33,7 +33,7 @@ Los DTOs se basan en `Context/digi-api.openapi.yaml`.
 
 `DigiApiClient` usa `HttpClient` tipado, `System.Text.Json`, `IHttpClientFactory` e `IMemoryCache`.
 
-La busqueda por nombre se dispara desde `DigimonSearchBox` mientras el usuario escribe. El componente aplica un pequeno debounce para evitar una llamada por cada pulsacion inmediata.
+La busqueda por nombre se dispara desde `DigimonSearchBox` mientras el usuario escribe. El componente recibe el termino actual mediante binding Razor y aplica un pequeno debounce para evitar una llamada por cada pulsacion inmediata.
 
 ## Manejo de errores
 

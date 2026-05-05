@@ -19,6 +19,12 @@ y este proyecto sigue [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Security
 
+## [0.1.3] - 2026-05-05
+
+### Fixed
+
+- Corregido el binding del buscador para que no muestre `_searchTerm` como texto literal al entrar o volver al listado.
+
 ## [0.1.2] - 2026-05-05
 
 ### Fixed
