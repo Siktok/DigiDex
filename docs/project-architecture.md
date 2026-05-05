@@ -18,10 +18,15 @@ La aplicacion usa Blazor Web App con renderizado Interactive Server. Los compone
 
 La pantalla principal es el listado de Digimon, disponible en `/` y `/digimon`. No se mantiene una pagina de inicio separada ni una barra lateral de navegacion porque el MVP solo tiene un flujo principal.
 
+El listado ofrece dos modos de presentacion:
+
+- Tarjetas paginadas para exploracion visual.
+- Lista completa para revisar todos los Digimon en una vista compacta.
+
 La estructura separa:
 
 - `Components/Pages`: paginas con rutas. El listado de Digimon es la entrada principal.
-- `Components/Digimon`: componentes reutilizables de dominio.
+- `Components/Digimon`: componentes reutilizables de dominio, incluyendo tarjetas, busqueda, evoluciones y lista completa.
 - `Components/Shared`: estados comunes de carga, error y vacio.
 - `Models/Api`: DTOs tolerantes con la forma de Digi-API.
 - `Models/ViewModels`: modelos seguros para renderizar en UI.

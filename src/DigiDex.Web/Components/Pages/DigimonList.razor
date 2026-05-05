@@ -11,29 +11,54 @@
 
 <div class="page-header">
     <div>
-        <p class="eyebrow">Listado</p>
+        <p class="eyebrow">DigiDex</p>
         <h1>Digimon</h1>
+        <p>Explora, busca y abre el detalle de cualquier Digimon desde Digi-API.</p>
+    </div>
+    <div class="header-stat">
+        <strong>@TotalResultsLabel</strong>
+        <span>resultados</span>
     </div>
 </div>
 
-<DigimonSearchBox Value="@_searchTerm" OnSearch="SearchAsync" />
+<section class="toolbar">
+    <DigimonSearchBox Value="@_searchTerm" OnSearch="SearchAsync" />
+
+    <div class="view-toggle" aria-label="Modo de vista">
+        <button class="@GetModeButtonClass(ListDisplayMode.Cards)" type="button" @onclick="() => ChangeModeAsync(ListDisplayMode.Cards)">
+            Tarjetas
+        </button>
+        <button class="@GetModeButtonClass(ListDisplayMode.FullList)" type="button" @onclick="() => ChangeModeAsync(ListDisplayMode.FullList)">
+            Lista completa
+        </button>
+    </div>
+</section>
 
 @if (_isLoading)
 {
-    <LoadingSpinner Message="Cargando Digimon..." />
+    <LoadingSpinner Message="@LoadingMessage" />
 }
 else if (!string.IsNullOrWhiteSpace(_errorMessage))
 {
     <ErrorMessage Message="_errorMessage" />
 }
-else if (_digimonPage is null || !_digimonPage.HasItems)
+else if (!HasResults)
 {
     <EmptyState Title="No hay Digimon" Message="No se encontraron Digimon con los criterios actuales." />
+}
+else if (_displayMode == ListDisplayMode.FullList)
+{
+    <div class="list-summary">
+        <span>@_allDigimon.Count Digimon cargados</span>
+        <span>Ordenados por ID</span>
+    </div>
+
+    <DigimonFullList Items="_allDigimon" />
 }
 else
 {
     <div class="list-summary">
-        <span>Pagina @(_digimonPage.CurrentPage + 1) de @Math.Max(_digimonPage.TotalPages, 1)</span>
+        <span>Pagina @(_digimonPage!.CurrentPage + 1) de @Math.Max(_digimonPage.TotalPages, 1)</span>
         <span>@_digimonPage.TotalElements resultados</span>
     </div>
 
@@ -57,12 +82,26 @@ else
     private string? _searchTerm;
     private int _currentPage;
     private int _loadVersion;
+    private ListDisplayMode _displayMode = ListDisplayMode.Cards;
+    private IReadOnlyList<DigimonSummaryViewModel> _allDigimon = [];
 
     private int PageSize => Options.Value.DefaultPageSize;
 
+    private bool HasResults => _displayMode == ListDisplayMode.FullList
+        ? _allDigimon.Count > 0
+        : _digimonPage?.HasItems is true;
+
+    private string LoadingMessage => _displayMode == ListDisplayMode.FullList
+        ? "Cargando lista completa de Digimon..."
+        : "Cargando Digimon...";
+
+    private string TotalResultsLabel => _displayMode == ListDisplayMode.FullList
+        ? _allDigimon.Count.ToString()
+        : (_digimonPage?.TotalElements ?? 0).ToString();
+
     protected override Task OnInitializedAsync()
     {
-        return LoadPageAsync(0);
+        return LoadCurrentModeAsync();
     }
 
     private async Task SearchAsync(string? term)
@@ -75,7 +114,8 @@ else
         }
 
         _searchTerm = normalizedTerm;
-        await LoadPageAsync(0);
+        _currentPage = 0;
+        await LoadCurrentModeAsync();
     }
 
     private Task PreviousPageAsync()
@@ -86,6 +126,24 @@ else
     private Task NextPageAsync()
     {
         return LoadPageAsync(_currentPage + 1);
+    }
+
+    private async Task ChangeModeAsync(ListDisplayMode mode)
+    {
+        if (_displayMode == mode)
+        {
+            return;
+        }
+
+        _displayMode = mode;
+        await LoadCurrentModeAsync();
+    }
+
+    private Task LoadCurrentModeAsync()
+    {
+        return _displayMode == ListDisplayMode.FullList
+            ? LoadAllAsync()
+            : LoadPageAsync(_currentPage);
     }
 
     private async Task LoadPageAsync(int page)
@@ -108,6 +166,7 @@ else
 
             _digimonPage = digimonPage;
             _currentPage = _digimonPage.CurrentPage;
+            _allDigimon = [];
         }
         catch (DigiApiException exception)
         {
@@ -136,5 +195,63 @@ else
                 _isLoading = false;
             }
         }
+    }
+
+    private async Task LoadAllAsync()
+    {
+        var loadVersion = ++_loadVersion;
+        _isLoading = true;
+        _errorMessage = null;
+
+        try
+        {
+            var allDigimon = await DigiApiClient.GetAllDigimonAsync(_searchTerm);
+
+            if (loadVersion != _loadVersion)
+            {
+                return;
+            }
+
+            _allDigimon = allDigimon;
+            _digimonPage = null;
+        }
+        catch (DigiApiException exception)
+        {
+            if (loadVersion != _loadVersion)
+            {
+                return;
+            }
+
+            _allDigimon = [];
+            _errorMessage = exception.Message;
+        }
+        catch
+        {
+            if (loadVersion != _loadVersion)
+            {
+                return;
+            }
+
+            _allDigimon = [];
+            _errorMessage = "No se pudo cargar la lista completa de Digimon. Intentalo de nuevo.";
+        }
+        finally
+        {
+            if (loadVersion == _loadVersion)
+            {
+                _isLoading = false;
+            }
+        }
+    }
+
+    private string GetModeButtonClass(ListDisplayMode mode)
+    {
+        return _displayMode == mode ? "mode-button active" : "mode-button";
+    }
+
+    private enum ListDisplayMode
+    {
+        Cards,
+        FullList
     }
 }

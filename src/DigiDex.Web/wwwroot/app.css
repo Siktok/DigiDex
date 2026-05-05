@@ -2,7 +2,7 @@ html,
 body {
     min-height: 100%;
     font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: #f6f8fb;
+    background: #f2f6f4;
     color: #18212f;
 }
 
@@ -11,7 +11,8 @@ a {
 }
 
 .content {
-    padding-top: 1.25rem;
+    padding-bottom: 2rem;
+    padding-top: 2rem;
 }
 
 h1:focus {
@@ -27,12 +28,12 @@ h1:focus {
 }
 
 .btn-primary {
-    background: #1368aa;
+    background: #0d6f86;
     color: #fff;
 }
 
 .btn-secondary {
-    background: #e6edf4;
+    background: #e7eee8;
     color: #18212f;
 }
 
@@ -42,11 +43,64 @@ h1:focus {
 }
 
 .page-header {
+    align-items: center;
+    background: #10242b;
+    border: 1px solid #193841;
+    border-radius: 8px;
+    box-shadow: 0 18px 40px rgba(16, 36, 43, 0.16);
+    color: #fff;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
     margin-bottom: 1.5rem;
+    overflow: hidden;
+    padding: 1.5rem;
+    position: relative;
+}
+
+.page-header::before {
+    background: #f4c542;
+    content: "";
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 8px;
+}
+
+.page-header h1 {
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 900;
+    line-height: 1;
+    margin: 0;
+}
+
+.page-header p {
+    color: #c9d6d6;
+    margin: 0.55rem 0 0;
+    max-width: 52rem;
+}
+
+.header-stat {
+    align-items: flex-end;
+    display: flex;
+    flex-direction: column;
+    min-width: 8rem;
+}
+
+.header-stat strong {
+    color: #f4c542;
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.header-stat span {
+    color: #c9d6d6;
+    font-weight: 700;
 }
 
 .eyebrow {
-    color: #6f7785;
+    color: #f4c542;
     font-size: 0.78rem;
     font-weight: 800;
     letter-spacing: 0;
@@ -63,9 +117,8 @@ h1:focus {
 
 .search-box {
     background: #fff;
-    border: 1px solid #dde5ef;
+    border: 1px solid #d7e2dc;
     border-radius: 8px;
-    margin-bottom: 1rem;
     padding: 1rem;
 }
 
@@ -81,8 +134,40 @@ h1:focus {
     grid-template-columns: minmax(0, 1fr) auto;
 }
 
+.toolbar {
+    align-items: end;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: minmax(0, 1fr) auto;
+    margin-bottom: 1rem;
+}
+
+.view-toggle {
+    background: #fff;
+    border: 1px solid #d7e2dc;
+    border-radius: 8px;
+    display: flex;
+    gap: 0.35rem;
+    padding: 0.35rem;
+}
+
+.mode-button {
+    background: transparent;
+    border: 0;
+    border-radius: 6px;
+    color: #52605c;
+    font-weight: 800;
+    min-height: 2.5rem;
+    padding: 0.55rem 0.8rem;
+}
+
+.mode-button.active {
+    background: #0d6f86;
+    color: #fff;
+}
+
 .form-control {
-    border: 1px solid #cbd6e2;
+    border: 1px solid #bdccc5;
     border-radius: 6px;
     min-height: 2.5rem;
     padding: 0.55rem 0.75rem;
@@ -98,17 +183,34 @@ h1:focus {
     margin: 1rem 0;
 }
 
+.list-summary {
+    background: #fff;
+    border: 1px solid #d7e2dc;
+    border-radius: 8px;
+    color: #52605c;
+    font-weight: 700;
+    padding: 0.75rem 1rem;
+}
+
 .digimon-grid {
     display: grid;
-    gap: 1rem;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.1rem;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
 }
 
 .digimon-card {
     background: #fff;
-    border: 1px solid #dde5ef;
+    border: 1px solid #d7e2dc;
     border-radius: 8px;
+    box-shadow: 0 12px 28px rgba(24, 33, 47, 0.08);
     overflow: hidden;
+    transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+.digimon-card:hover {
+    border-color: #0d6f86;
+    box-shadow: 0 18px 36px rgba(13, 111, 134, 0.16);
+    transform: translateY(-2px);
 }
 
 .digimon-card-link {
@@ -119,13 +221,13 @@ h1:focus {
 }
 
 .digimon-card-link:hover h2 {
-    color: #1368aa;
+    color: #0d6f86;
 }
 
 .digimon-card-image {
     align-items: center;
     aspect-ratio: 1;
-    background: #eef4fa;
+    background: #edf5f2;
     display: flex;
     justify-content: center;
     padding: 1rem;
@@ -138,11 +240,13 @@ h1:focus {
 }
 
 .digimon-card-body {
-    padding: 0.9rem;
+    border-top: 4px solid #f4c542;
+    padding: 0.95rem;
 }
 
 .digimon-card-body h2 {
-    font-size: 1.05rem;
+    font-size: 1.12rem;
+    font-weight: 900;
     line-height: 1.25;
     margin: 0.2rem 0 0;
 }
@@ -153,13 +257,68 @@ h1:focus {
 }
 
 .digimon-number {
-    font-size: 0.95rem;
+    color: #0d6f86;
+    font-size: 1.05rem;
+    font-weight: 800;
+}
+
+.digimon-full-list {
+    background: #fff;
+    border: 1px solid #d7e2dc;
+    border-radius: 8px;
+    box-shadow: 0 12px 28px rgba(24, 33, 47, 0.08);
+    overflow: hidden;
+}
+
+.digimon-list-row {
+    align-items: center;
+    color: inherit;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 4rem 6rem minmax(0, 1fr) auto;
+    min-height: 5.25rem;
+    padding: 0.65rem 1rem;
+    text-decoration: none;
+}
+
+.digimon-list-row + .digimon-list-row {
+    border-top: 1px solid #e6eee9;
+}
+
+.digimon-list-row:hover {
+    background: #f7fbf9;
+}
+
+.digimon-list-image {
+    align-items: center;
+    background: #edf5f2;
+    border-radius: 8px;
+    display: flex;
+    height: 4rem;
+    justify-content: center;
+    width: 4rem;
+}
+
+.digimon-list-image img {
+    max-height: 3.5rem;
+    max-width: 3.5rem;
+    object-fit: contain;
+}
+
+.digimon-list-id {
+    color: #0d6f86;
+    font-size: 1rem;
+    font-weight: 900;
+}
+
+.digimon-list-action {
+    color: #52605c;
     font-weight: 800;
 }
 
 .state-panel {
     background: #fff;
-    border: 1px solid #dde5ef;
+    border: 1px solid #d7e2dc;
     border-radius: 8px;
     margin: 1rem 0;
     padding: 1rem;
@@ -176,8 +335,8 @@ h1:focus {
 
 .loading-spinner {
     animation: spin 0.85s linear infinite;
-    border: 3px solid #cbd6e2;
-    border-top-color: #1368aa;
+    border: 3px solid #d7e2dc;
+    border-top-color: #0d6f86;
     border-radius: 50%;
     display: inline-block;
     height: 2rem;
@@ -206,7 +365,7 @@ h1:focus {
     align-items: center;
     aspect-ratio: 1;
     background: #fff;
-    border: 1px solid #dde5ef;
+    border: 1px solid #d7e2dc;
     border-radius: 8px;
     display: flex;
     justify-content: center;
@@ -238,7 +397,7 @@ h1:focus {
 
 .metadata-grid div {
     background: #fff;
-    border: 1px solid #dde5ef;
+    border: 1px solid #d7e2dc;
     border-radius: 8px;
     padding: 0.85rem;
 }
@@ -270,7 +429,7 @@ h1:focus {
 .skill-list li,
 .evolution-item {
     background: #fff;
-    border: 1px solid #dde5ef;
+    border: 1px solid #d7e2dc;
     border-radius: 8px;
     padding: 0.75rem;
 }
@@ -329,9 +488,39 @@ h1:focus {
 
 @media (max-width: 720px) {
     .search-box-row,
+    .toolbar,
     .digimon-detail,
     .evolution-columns {
         grid-template-columns: 1fr;
+    }
+
+    .page-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .header-stat {
+        align-items: flex-start;
+    }
+
+    .view-toggle {
+        width: 100%;
+    }
+
+    .mode-button {
+        flex: 1;
+    }
+
+    .digimon-list-row {
+        grid-template-columns: 4rem minmax(0, 1fr);
+    }
+
+    .digimon-list-image {
+        grid-row: span 2;
+    }
+
+    .digimon-list-action {
+        display: none;
     }
 
     .list-summary,

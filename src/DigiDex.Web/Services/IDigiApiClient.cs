@@ -13,6 +13,13 @@ public interface IDigiApiClient
         bool? xAntibody = null,
         CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<DigimonSummaryViewModel>> GetAllDigimonAsync(
+        string? name = null,
+        string? level = null,
+        string? attribute = null,
+        bool? xAntibody = null,
+        CancellationToken cancellationToken = default);
+
     Task<DigimonDetailViewModel?> GetDigimonByIdAsync(
         int id,
         CancellationToken cancellationToken = default);

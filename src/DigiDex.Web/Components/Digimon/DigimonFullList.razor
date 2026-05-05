@@ -1,0 +1,27 @@
+@using DigiDex.Web.Models.ViewModels
+
+<div class="digimon-full-list">
+    @foreach (var digimon in Items)
+    {
+        <a class="digimon-list-row" href="/digimon/@digimon.Id">
+            <span class="digimon-list-image">
+                @if (!string.IsNullOrWhiteSpace(digimon.ImageUrl))
+                {
+                    <img src="@digimon.ImageUrl" alt="@digimon.Name" loading="lazy" />
+                }
+                else
+                {
+                    <span class="image-placeholder">Sin imagen</span>
+                }
+            </span>
+            <span class="digimon-list-id">#@digimon.Id</span>
+            <strong>@digimon.Name</strong>
+            <span class="digimon-list-action">Ver detalle</span>
+        </a>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public IReadOnlyList<DigimonSummaryViewModel> Items { get; set; } = [];
+}

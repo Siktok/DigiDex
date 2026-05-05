@@ -64,6 +64,7 @@ Context/digi-api.openapi.yaml
 ## Funcionalidades del MVP
 
 - Listado paginado de Digimon como pantalla principal.
+- Modo de tarjetas paginadas y modo de lista completa.
 - Busqueda dinamica por nombre mientras se escribe.
 - Detalle de Digimon por ID.
 - Imagenes, niveles, tipos, atributos, campos, habilidades y evoluciones cuando Digi-API los devuelve.

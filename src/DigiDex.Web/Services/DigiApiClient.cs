@@ -9,6 +9,9 @@ namespace DigiDex.Web.Services;
 
 public sealed class DigiApiClient : IDigiApiClient
 {
+    private const int CompleteListPageSize = 100;
+    private const int CompleteListMaxPages = 100;
+
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
     private static readonly TimeSpan DetailCacheDuration = TimeSpan.FromMinutes(30);
 
@@ -59,6 +62,43 @@ public sealed class DigiApiClient : IDigiApiClient
         var dto = await SendAndReadAsync<DigimonPageDto>(requestUri, cancellationToken);
 
         return MapPage(dto, pageSize);
+    }
+
+    public async Task<IReadOnlyList<DigimonSummaryViewModel>> GetAllDigimonAsync(
+        string? name = null,
+        string? level = null,
+        string? attribute = null,
+        bool? xAntibody = null,
+        CancellationToken cancellationToken = default)
+    {
+        var results = new List<DigimonSummaryViewModel>();
+        var currentPage = 0;
+
+        while (currentPage < CompleteListMaxPages)
+        {
+            var page = await GetDigimonPageAsync(
+                currentPage,
+                CompleteListPageSize,
+                name,
+                level,
+                attribute,
+                xAntibody,
+                cancellationToken);
+
+            results.AddRange(page.Items);
+
+            if (!page.HasNextPage)
+            {
+                break;
+            }
+
+            currentPage++;
+        }
+
+        return results
+            .DistinctBy(digimon => digimon.Id)
+            .OrderBy(digimon => digimon.Id)
+            .ToArray();
     }
 
     public async Task<DigimonDetailViewModel?> GetDigimonByIdAsync(

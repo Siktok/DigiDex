@@ -9,9 +9,9 @@ Mantener trazabilidad de los cambios significativos del proyecto con Semantic Ve
 La version central vive en `Directory.Build.props`:
 
 ```xml
-<Version>0.1.2</Version>
-<AssemblyVersion>0.1.2.0</AssemblyVersion>
-<FileVersion>0.1.2.0</FileVersion>
+<Version>0.2.0</Version>
+<AssemblyVersion>0.2.0.0</AssemblyVersion>
+<FileVersion>0.2.0.0</FileVersion>
 ```
 
 ## Semantic Versioning

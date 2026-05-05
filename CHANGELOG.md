@@ -19,6 +19,18 @@ y este proyecto sigue [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Security
 
+## [0.2.0] - 2026-05-05
+
+### Added
+
+- Anadido selector de vista entre tarjetas paginadas y lista completa de Digimon.
+- Anadido componente `DigimonFullList` para mostrar todos los Digimon en formato de lista.
+
+### Changed
+
+- Mejorado el aspecto visual del listado con cabecera destacada, tarjetas con mayor presencia y estados de resumen mas claros.
+- Ampliado `IDigiApiClient` con carga completa paginada para construir la lista de todos los Digimon.
+
 ## [0.1.3] - 2026-05-05
 
 ### Fixed

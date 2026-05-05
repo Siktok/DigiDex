@@ -29,11 +29,14 @@ Los DTOs se basan en `Context/digi-api.openapi.yaml`.
 `IDigiApiClient` expone metodos asincronos orientados a la UI:
 
 - `GetDigimonPageAsync`
+- `GetAllDigimonAsync`
 - `GetDigimonByIdAsync`
 
 `DigiApiClient` usa `HttpClient` tipado, `System.Text.Json`, `IHttpClientFactory` e `IMemoryCache`.
 
 La busqueda por nombre se dispara desde `DigimonSearchBox` mientras el usuario escribe. El componente recibe el termino actual mediante binding Razor y aplica un pequeno debounce para evitar una llamada por cada pulsacion inmediata.
+
+El modo de lista completa usa `GetAllDigimonAsync`, que recorre paginas de Digi-API con un tamano mayor y un limite defensivo de paginas para evitar bucles si la paginacion remota cambia.
 
 ## Manejo de errores
 
@@ -43,7 +46,7 @@ La busqueda por nombre se dispara desde `DigimonSearchBox` mientras el usuario e
 
 ## Cache
 
-El detalle por ID se guarda en `IMemoryCache` durante 30 minutos. El listado y la busqueda no se cachean todavia para evitar resultados obsoletos durante el MVP.
+El detalle por ID se guarda en `IMemoryCache` durante 30 minutos. El listado, la lista completa y la busqueda no se cachean todavia para evitar resultados obsoletos durante el MVP.
 
 ## Alternativas descartadas
 
