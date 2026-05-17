@@ -1,0 +1,36 @@
+name: Playwright E2E
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  e2e:
+    name: Build and run Playwright E2E
+    runs-on: windows-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore
+
+      - name: Install Playwright browsers
+        run: powershell -ExecutionPolicy Bypass -File tests/DigiDex.Web.E2ETests/bin/Debug/net10.0/playwright.ps1 install --with-deps
+
+      - name: Run Playwright E2E tests
+        run: dotnet test tests/DigiDex.Web.E2ETests --no-build

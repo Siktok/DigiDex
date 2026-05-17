@@ -42,6 +42,31 @@ Ejecutar:
 dotnet run --project src/DigiDex.Web
 ```
 
+Ejecutar tests:
+
+```bash
+dotnet test
+```
+
+Instalar navegadores de Playwright tras el primer build:
+
+```bash
+powershell -ExecutionPolicy Bypass -File tests/DigiDex.Web.E2ETests/bin/Debug/net10.0/playwright.ps1 install
+```
+
+Ejecutar los tests E2E contra una app ya levantada:
+
+```powershell
+$env:DIGIDEX_BASE_URL="http://127.0.0.1:5064"
+dotnet test tests/DigiDex.Web.E2ETests
+```
+
+## Integracion continua
+
+El workflow `Playwright E2E` de GitHub Actions ejecuta build y tests E2E en cada pull request hacia `main` y en cada push a `main`.
+
+Si el workflow falla, GitHub marca la pull request con un check rojo. Para bloquear merges con tests fallidos, configura una regla de proteccion de rama o ruleset en GitHub y exige que el check `Playwright E2E / Build and run Playwright E2E` pase antes de fusionar.
+
 ## Estructura basica
 
 ```text

@@ -2,4 +2,7 @@
   <Folder Name="/src/">
     <Project Path="src/DigiDex.Web/DigiDex.Web.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/DigiDex.Web.E2ETests/DigiDex.Web.E2ETests.csproj" />
+  </Folder>
 </Solution>
