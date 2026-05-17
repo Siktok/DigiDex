@@ -9,6 +9,9 @@ y este proyecto sigue [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Added
 
+- Anadida suite E2E inicial con Playwright .NET para validar carga del listado, busqueda y navegacion al detalle usando Digi-API real.
+- Anadido workflow de GitHub Actions para ejecutar los tests E2E de Playwright en pull requests y pushes a `main`.
+
 ### Changed
 
 ### Deprecated
