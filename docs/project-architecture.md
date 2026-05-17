@@ -32,6 +32,7 @@ La estructura separa:
 - `Models/ViewModels`: modelos seguros para renderizar en UI.
 - `Services`: integracion con Digi-API.
 - `Options`: configuracion fuertemente tipada.
+- `tests/DigiDex.Web.E2ETests`: pruebas E2E con Playwright .NET para validar flujos reales en navegador.
 
 ## Motivo
 
@@ -48,6 +49,10 @@ Interactive Server permite construir el MVP con interactividad, menor complejida
 
 La aplicacion queda compilable, con un flujo directo hacia el listado y preparada para agregar filtros, favoritos o tests sin rehacer la estructura.
 
+La suite E2E comprueba el flujo principal desde fuera de la aplicacion, como lo haria un usuario: abrir el listado, buscar y navegar al detalle. Estos tests no sustituyen futuros tests unitarios del cliente API o mapeos, pero cubren regresiones visibles del MVP.
+
 ## Mantenimiento
 
 Agregar nuevas paginas en `Components/Pages`, componentes reutilizables en `Components/Digimon` o `Components/Shared`, y nueva logica de API en `IDigiApiClient` cuando exista una necesidad de UI real.
+
+Mantener los tests Playwright centrados en flujos criticos y selectores accesibles. Si la suite crece, separar tests estables con datos controlados de pruebas opcionales contra Digi-API real.
