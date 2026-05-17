@@ -57,12 +57,94 @@ Ejecutar tests:
 dotnet test
 ```
 
-Ver el navegador mientras se ejecuta el test:
+Ejecutar solo la suite E2E:
+
+```powershell
+dotnet test tests/DigiDex.Web.E2ETests
+```
+
+### PowerShell frente a CMD
+
+En PowerShell las variables de entorno se definen con `$env:`:
 
 ```powershell
 $env:HEADED="1"
+$env:DIGIDEX_BASE_URL="http://127.0.0.1:5064"
 dotnet test tests/DigiDex.Web.E2ETests
 ```
+
+En CMD se definen con `set`:
+
+```cmd
+set HEADED=1
+set DIGIDEX_BASE_URL=http://127.0.0.1:5064
+dotnet test tests\DigiDex.Web.E2ETests
+```
+
+`HEADED=1` abre el navegador visible, pero el test sigue ejecutandose rapido.
+
+Para depurar paso a paso, usar `PWDEBUG=1`:
+
+```cmd
+set PWDEBUG=1
+set DIGIDEX_BASE_URL=http://127.0.0.1:5064
+dotnet test tests\DigiDex.Web.E2ETests
+```
+
+`PWDEBUG=1` abre el Playwright Inspector y permite avanzar accion por accion.
+
+## Funcion de `DigiDexWebAppFixture`
+
+`DigimonSmokeTests` describe lo que hace el usuario en el navegador. `DigiDexWebAppFixture` prepara la aplicacion para que ese test tenga una URL real contra la que trabajar.
+
+La fixture cumple estas responsabilidades:
+
+- Usa `DIGIDEX_BASE_URL` si se proporciona desde la terminal o desde CI.
+- Si no se proporciona, intenta reutilizar `http://127.0.0.1:5064` si ya hay una app levantada.
+- Si no hay app levantada, ejecuta `dotnet run --project src/DigiDex.Web --no-launch-profile --urls http://127.0.0.1:5064`.
+- Espera hasta 45 segundos a que DigiDex responda `200 OK`.
+- Si la propia fixture arranco el proceso, lo cierra al finalizar los tests.
+
+Esto hace que `dotnet test` funcione tanto en local como en GitHub Actions sin levantar la aplicacion manualmente.
+
+En el test, la fixture se conecta asi:
+
+```csharp
+public sealed class DigimonSmokeTests(DigiDexWebAppFixture app)
+    : PageTest, IClassFixture<DigiDexWebAppFixture>
+```
+
+Y se usa aqui:
+
+```csharp
+BaseURL = app.BaseUrl
+```
+
+Gracias a eso, el test puede navegar con rutas relativas:
+
+```csharp
+await Page.GotoAsync("/");
+```
+
+## Selectores y esperas
+
+Los tests deben preferir selectores accesibles:
+
+```csharp
+Page.GetByRole(AriaRole.Heading, new() { Name = "Digimon", Exact = true })
+Page.GetByLabel("Buscar por nombre")
+Page.GetByRole(AriaRole.Link, new() { Name = "Ver detalle de Agumon", Exact = true })
+```
+
+Cuando un texto puede coincidir con variantes, usar `Exact = true`. Por ejemplo, `Agumon` tambien coincide parcialmente con `Agumon (Black)` si el selector no es exacto.
+
+Playwright ya espera automaticamente con `Expect`:
+
+```csharp
+await Expect(locator).ToBeVisibleAsync();
+```
+
+Evitar esperas fijas como `Thread.Sleep` o `Task.Delay` salvo para depuracion puntual.
 
 ## GitHub Actions
 
