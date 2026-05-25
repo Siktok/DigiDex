@@ -20,6 +20,12 @@ public interface IDigiApiClient
         bool? xAntibody = null,
         CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<DigimonFilterOptionViewModel>> GetLevelOptionsAsync(
+        CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<DigimonFilterOptionViewModel>> GetAttributeOptionsAsync(
+        CancellationToken cancellationToken = default);
+
     Task<DigimonDetailViewModel?> GetDigimonByIdAsync(
         int id,
         CancellationToken cancellationToken = default);

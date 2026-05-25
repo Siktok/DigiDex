@@ -11,9 +11,11 @@ public sealed class DigiApiClient : IDigiApiClient
 {
     private const int CompleteListPageSize = 100;
     private const int CompleteListMaxPages = 100;
+    private const int ReferenceDataMaxPages = 25;
 
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
     private static readonly TimeSpan DetailCacheDuration = TimeSpan.FromMinutes(30);
+    private static readonly TimeSpan ReferenceDataCacheDuration = TimeSpan.FromHours(6);
 
     private readonly HttpClient _httpClient;
     private readonly IMemoryCache _cache;
@@ -101,6 +103,18 @@ public sealed class DigiApiClient : IDigiApiClient
             .ToArray();
     }
 
+    public Task<IReadOnlyList<DigimonFilterOptionViewModel>> GetLevelOptionsAsync(
+        CancellationToken cancellationToken = default)
+    {
+        return GetReferenceOptionsAsync("level", "digimon-level-options", cancellationToken);
+    }
+
+    public Task<IReadOnlyList<DigimonFilterOptionViewModel>> GetAttributeOptionsAsync(
+        CancellationToken cancellationToken = default)
+    {
+        return GetReferenceOptionsAsync("attribute", "digimon-attribute-options", cancellationToken);
+    }
+
     public async Task<DigimonDetailViewModel?> GetDigimonByIdAsync(
         int id,
         CancellationToken cancellationToken = default)
@@ -149,6 +163,89 @@ public sealed class DigiApiClient : IDigiApiClient
         {
             query[key] = value.Trim();
         }
+    }
+
+    private async Task<IReadOnlyList<DigimonFilterOptionViewModel>> GetReferenceOptionsAsync(
+        string endpoint,
+        string cacheKey,
+        CancellationToken cancellationToken)
+    {
+        if (_cache.TryGetValue(cacheKey, out IReadOnlyList<DigimonFilterOptionViewModel>? cachedOptions))
+        {
+            return cachedOptions ?? [];
+        }
+
+        var options = new List<DigimonFilterOptionViewModel>();
+        var requestUri = endpoint;
+        var pagesRead = 0;
+
+        while (!string.IsNullOrWhiteSpace(requestUri) && pagesRead < ReferenceDataMaxPages)
+        {
+            var dto = await SendAndReadReferenceAsync(requestUri, cancellationToken);
+            options.AddRange(MapReferenceFields(dto.Fields));
+
+            requestUri = NormalizeNextPageUri(dto.Pageable?.NextPage);
+            pagesRead++;
+        }
+
+        var mappedOptions = options
+            .DistinctBy(option => option.Id)
+            .OrderBy(option => option.Id)
+            .ToArray();
+
+        _cache.Set(cacheKey, mappedOptions, ReferenceDataCacheDuration);
+
+        return mappedOptions;
+    }
+
+    private async Task<ReferenceDataDto> SendAndReadReferenceAsync(string requestUri, CancellationToken cancellationToken)
+    {
+        var response = await SendAsync(requestUri, cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new DigiApiException("No se pudieron cargar las opciones de filtro. Intentalo de nuevo.");
+        }
+
+        var json = await response.Content.ReadAsStringAsync(cancellationToken);
+        var envelope = JsonSerializer.Deserialize<ReferenceDataEnvelopeDto>(json, JsonOptions);
+
+        if (envelope?.Content is not null)
+        {
+            return envelope.Content.Pageable is null && envelope.Pageable is not null
+                ? envelope.Content with { Pageable = envelope.Pageable }
+                : envelope.Content;
+        }
+
+        var dto = JsonSerializer.Deserialize<ReferenceDataDto>(json, JsonOptions);
+
+        return dto ?? throw new DigiApiException("La respuesta de opciones de filtro no pudo leerse correctamente.");
+    }
+
+    private static string? NormalizeNextPageUri(string? nextPage)
+    {
+        if (string.IsNullOrWhiteSpace(nextPage))
+        {
+            return null;
+        }
+
+        if (Uri.TryCreate(nextPage, UriKind.Absolute, out var absoluteUri))
+        {
+            return absoluteUri.PathAndQuery.TrimStart('/').Replace("api/v1/", string.Empty, StringComparison.OrdinalIgnoreCase);
+        }
+
+        return nextPage.Trim().TrimStart('/');
+    }
+
+    private static IReadOnlyList<DigimonFilterOptionViewModel> MapReferenceFields(IReadOnlyList<ReferenceFieldDto>? fields)
+    {
+        return fields?
+            .Where(field => field.Id is > 0 && !string.IsNullOrWhiteSpace(field.Name))
+            .Select(field => new DigimonFilterOptionViewModel(
+                field.Id!.Value,
+                field.Name!.Trim(),
+                string.IsNullOrWhiteSpace(field.Href) ? null : field.Href.Trim()))
+            .ToArray() ?? [];
     }
 
     private async Task<T> SendAndReadAsync<T>(string requestUri, CancellationToken cancellationToken)

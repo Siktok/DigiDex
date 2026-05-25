@@ -9,10 +9,19 @@ y este proyecto sigue [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Added
 
+- Anadidos filtros de Digimon por nivel, atributo y X-Antibody con opciones cargadas desde Digi-API.
+- Anadida cobertura xUnit para metadata de filtros, paginacion por `nextPage`, cache y query strings de filtros.
+- Anadida cobertura Playwright para controles de filtro y combinacion de busqueda, filtros y cambio a lista completa.
 - Anadida suite E2E inicial con Playwright .NET para validar carga del listado, busqueda y navegacion al detalle usando Digi-API real.
 - Anadido workflow de GitHub Actions para ejecutar los tests E2E de Playwright en pull requests y pushes a `main`.
+- Anadida inicializacion SDD con OpenSpec, capacidades de testing detectadas y registro de skills en `.atl/skill-registry.md`.
 
 ### Changed
+
+- Actualizada la documentacion principal y de versionado para reflejar los filtros de Digimon y la version `0.5.1`.
+- Unificados los placeholders de filtros para mostrar `Todos` en nivel, atributo y X-Antibody.
+- Version del proyecto incrementada a `0.5.0` por la nueva funcionalidad de filtros.
+- Version del proyecto incrementada a `0.5.1` por el ajuste visual de placeholders de filtros.
 
 ### Deprecated
 

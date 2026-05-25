@@ -4,6 +4,8 @@ DigiDex es una aplicacion web de aprendizaje para consultar informacion de Digim
 
 El MVP esta construido con .NET 10, ASP.NET Core Blazor Web App e Interactive Server. No usa base de datos, autenticacion ni dependencias de arquitectura pesada.
 
+Version actual: `0.5.1`.
+
 ## Requisitos
 
 - .NET SDK 10
@@ -91,7 +93,20 @@ Context/digi-api.openapi.yaml
 - Listado paginado de Digimon como pantalla principal.
 - Modo de tarjetas paginadas y modo de lista completa.
 - Busqueda dinamica por nombre mientras se escribe.
+- Filtros por nivel, atributo y X-Antibody usando valores reales de Digi-API.
 - Detalle de Digimon por ID.
 - Imagenes, niveles, tipos, atributos, campos, habilidades y evoluciones cuando Digi-API los devuelve.
 - Estados de carga, error y resultados vacios.
 - Interfaz responsive con controles alineados, tarjetas visuales y lista compacta.
+
+## Filtros de Digimon
+
+Los filtros disponibles son:
+
+| Filtro | Fuente | Comportamiento |
+|--------|--------|----------------|
+| Nivel | `GET /level` | Usa nombres de Digi-API como `Child`, `Adult` o `Ultimate`. |
+| Atributo | `GET /attribute` | Usa nombres de Digi-API como `Vaccine`, `Data` o `Virus`. |
+| X-Antibody | Query de `/digimon` | Permite `Todos`, `Si` o `No`. |
+
+Si Digi-API no permite cargar las opciones de nivel o atributo, los selects se deshabilitan y la pagina muestra un error claro sin bloquear el listado.

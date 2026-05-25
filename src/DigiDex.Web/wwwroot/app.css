@@ -165,11 +165,12 @@ h1:focus {
     align-items: stretch;
     display: grid;
     gap: 1rem;
-    grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem);
+    grid-template-columns: minmax(0, 1fr) minmax(20rem, 1fr) minmax(18rem, 24rem);
     margin-bottom: 1rem;
 }
 
 .control-card,
+.filter-card,
 .view-control {
     background: rgba(255, 255, 255, 0.92);
     border: 1px solid #d7e2dc;
@@ -180,6 +181,50 @@ h1:focus {
     justify-content: flex-end;
     min-height: 6.4rem;
     padding: 1rem;
+}
+
+.filter-header {
+    align-items: center;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: space-between;
+}
+
+.filter-grid {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.filter-grid label span {
+    color: #52605c;
+    display: block;
+    font-size: 0.76rem;
+    font-weight: 850;
+    margin-bottom: 0.35rem;
+}
+
+.toolbar-error {
+    background: #fff5f5;
+    border: 1px solid #efb4b4;
+    border-radius: 8px;
+    color: #8f1b1b;
+    font-weight: 750;
+    margin: 0 0 0.75rem;
+    padding: 0.55rem 0.7rem;
+}
+
+.link-button {
+    background: transparent;
+    border: 0;
+    color: #0d6f86;
+    font-weight: 850;
+    padding: 0;
+}
+
+.link-button:disabled {
+    color: #6f7785;
+    cursor: not-allowed;
 }
 
 .control-label {
@@ -611,6 +656,10 @@ h1:focus {
     }
 
     .view-toggle {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-grid {
         grid-template-columns: 1fr;
     }
 

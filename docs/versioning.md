@@ -1,5 +1,7 @@
 # Versionado
 
+La version actual del proyecto es `0.5.1` y se mantiene de forma centralizada en `Directory.Build.props`.
+
 ## Objetivo
 
 Mantener trazabilidad de los cambios significativos del proyecto con Semantic Versioning y `CHANGELOG.md`.
@@ -9,10 +11,12 @@ Mantener trazabilidad de los cambios significativos del proyecto con Semantic Ve
 La version central vive en `Directory.Build.props`:
 
 ```xml
-<Version>0.4.0</Version>
-<AssemblyVersion>0.4.0.0</AssemblyVersion>
-<FileVersion>0.4.0.0</FileVersion>
+<Version>0.5.1</Version>
+<AssemblyVersion>0.5.1.0</AssemblyVersion>
+<FileVersion>0.5.1.0</FileVersion>
 ```
+
+No duplicar esta version en `.csproj` o `appsettings.json` salvo que la aplicacion necesite mostrarla en runtime.
 
 ## Semantic Versioning
 
@@ -31,6 +35,13 @@ El changelog sigue Keep a Changelog. Mantener siempre `Unreleased` al inicio y m
 3. Incrementar la version en `Directory.Build.props` si el cambio es significativo.
 4. Registrar el cambio en `CHANGELOG.md`.
 5. Compilar con `dotnet build`.
+
+## Estado actual
+
+| Version | Motivo |
+|---------|--------|
+| `0.5.1` | Ajuste visual menor de placeholders de filtros. |
+| `0.5.0` | Filtros por nivel, atributo y X-Antibody con metadata de Digi-API. |
 
 ## Alternativas descartadas
 
