@@ -204,7 +204,7 @@ public sealed class DigiApiClient : IDigiApiClient
 
         if (!response.IsSuccessStatusCode)
         {
-            throw new DigiApiException("No se pudieron cargar las opciones de filtro. Intentalo de nuevo.");
+            throw new DigiApiException("No se pudieron cargar las opciones de filtro. Inténtalo de nuevo.");
         }
 
         var json = await response.Content.ReadAsStringAsync(cancellationToken);
