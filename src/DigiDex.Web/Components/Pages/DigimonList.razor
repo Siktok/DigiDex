@@ -30,6 +30,18 @@
 <section class="toolbar">
     <DigimonSearchBox Value="@_searchTerm" OnSearch="SearchAsync" />
 
+    <DigimonFilters LevelOptions="@_levelOptions"
+                    AttributeOptions="@_attributeOptions"
+                    SelectedLevel="@_selectedLevel"
+                    SelectedAttribute="@_selectedAttribute"
+                    SelectedXAntibody="@_selectedXAntibody"
+                    IsLoading="@_areFilterOptionsLoading"
+                    ErrorMessage="@_filterOptionsErrorMessage"
+                    OnLevelChanged="ChangeLevelAsync"
+                    OnAttributeChanged="ChangeAttributeAsync"
+                    OnXAntibodyChanged="ChangeXAntibodyAsync"
+                    OnClearFilters="ClearFiltersAsync" />
+
     <div class="view-control">
         <span class="control-label">Vista</span>
         <div class="view-toggle" aria-label="Modo de vista">
@@ -89,10 +101,17 @@ else
     private bool _isLoading;
     private string? _errorMessage;
     private string? _searchTerm;
+    private string? _selectedLevel;
+    private string? _selectedAttribute;
+    private bool? _selectedXAntibody;
+    private bool _areFilterOptionsLoading;
+    private string? _filterOptionsErrorMessage;
     private int _currentPage;
     private int _loadVersion;
     private ListDisplayMode _displayMode = ListDisplayMode.Cards;
     private IReadOnlyList<DigimonSummaryViewModel> _allDigimon = [];
+    private IReadOnlyList<DigimonFilterOptionViewModel> _levelOptions = [];
+    private IReadOnlyList<DigimonFilterOptionViewModel> _attributeOptions = [];
 
     private int PageSize => Options.Value.DefaultPageSize;
 
@@ -110,9 +129,16 @@ else
 
     private string CurrentModeLabel => _displayMode == ListDisplayMode.FullList ? "Lista" : "Tarjetas";
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        return LoadCurrentModeAsync();
+        _ = LoadFilterOptionsAndRefreshAsync();
+        await LoadCurrentModeAsync();
+    }
+
+    private async Task LoadFilterOptionsAndRefreshAsync()
+    {
+        await LoadFilterOptionsAsync();
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task SearchAsync(string? term)
@@ -126,6 +152,46 @@ else
 
         _searchTerm = normalizedTerm;
         _currentPage = 0;
+        await LoadCurrentModeAsync();
+    }
+
+    private Task ChangeLevelAsync(string? level)
+    {
+        return ChangeFiltersAsync(level, _selectedAttribute, _selectedXAntibody);
+    }
+
+    private Task ChangeAttributeAsync(string? attribute)
+    {
+        return ChangeFiltersAsync(_selectedLevel, attribute, _selectedXAntibody);
+    }
+
+    private Task ChangeXAntibodyAsync(bool? xAntibody)
+    {
+        return ChangeFiltersAsync(_selectedLevel, _selectedAttribute, xAntibody);
+    }
+
+    private Task ClearFiltersAsync()
+    {
+        return ChangeFiltersAsync(null, null, null);
+    }
+
+    private async Task ChangeFiltersAsync(string? level, string? attribute, bool? xAntibody)
+    {
+        var normalizedLevel = NormalizeFilter(level);
+        var normalizedAttribute = NormalizeFilter(attribute);
+
+        if (string.Equals(_selectedLevel, normalizedLevel, StringComparison.Ordinal)
+            && string.Equals(_selectedAttribute, normalizedAttribute, StringComparison.Ordinal)
+            && _selectedXAntibody == xAntibody)
+        {
+            return;
+        }
+
+        _selectedLevel = normalizedLevel;
+        _selectedAttribute = normalizedAttribute;
+        _selectedXAntibody = xAntibody;
+        _currentPage = 0;
+
         await LoadCurrentModeAsync();
     }
 
@@ -157,6 +223,37 @@ else
             : LoadPageAsync(_currentPage);
     }
 
+    private async Task LoadFilterOptionsAsync()
+    {
+        _areFilterOptionsLoading = true;
+        _filterOptionsErrorMessage = null;
+
+        try
+        {
+            var levelOptionsTask = DigiApiClient.GetLevelOptionsAsync();
+            var attributeOptionsTask = DigiApiClient.GetAttributeOptionsAsync();
+
+            _levelOptions = await levelOptionsTask;
+            _attributeOptions = await attributeOptionsTask;
+        }
+        catch (DigiApiException exception)
+        {
+            _levelOptions = [];
+            _attributeOptions = [];
+            _filterOptionsErrorMessage = exception.Message;
+        }
+        catch
+        {
+            _levelOptions = [];
+            _attributeOptions = [];
+            _filterOptionsErrorMessage = "No se pudieron cargar las opciones de filtro. Intentalo de nuevo.";
+        }
+        finally
+        {
+            _areFilterOptionsLoading = false;
+        }
+    }
+
     private async Task LoadPageAsync(int page)
     {
         var loadVersion = ++_loadVersion;
@@ -168,7 +265,10 @@ else
             var digimonPage = await DigiApiClient.GetDigimonPageAsync(
                 page,
                 PageSize,
-                _searchTerm);
+                _searchTerm,
+                _selectedLevel,
+                _selectedAttribute,
+                _selectedXAntibody);
 
             if (loadVersion != _loadVersion)
             {
@@ -216,7 +316,11 @@ else
 
         try
         {
-            var allDigimon = await DigiApiClient.GetAllDigimonAsync(_searchTerm);
+            var allDigimon = await DigiApiClient.GetAllDigimonAsync(
+                _searchTerm,
+                _selectedLevel,
+                _selectedAttribute,
+                _selectedXAntibody);
 
             if (loadVersion != _loadVersion)
             {
@@ -258,6 +362,11 @@ else
     private string GetModeButtonClass(ListDisplayMode mode)
     {
         return _displayMode == mode ? "mode-button active" : "mode-button";
+    }
+
+    private static string? NormalizeFilter(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value) ? null : value.Trim();
     }
 
     private enum ListDisplayMode

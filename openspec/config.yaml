@@ -1,0 +1,77 @@
+schema: spec-driven
+
+project:
+  name: DigiDex
+  detected: 2026-05-25
+  artifact_store: openspec
+
+context: |
+  Tech stack: .NET 10, ASP.NET Core Blazor Web App, C#, Razor components, Interactive Server.
+  Architecture: single Blazor Web project under src/DigiDex.Web with Services, Options, Models/Api, Models/ViewModels, and reusable Components.
+  Integration: Digi-API via typed HttpClient, IOptions<T>, System.Text.Json, and IMemoryCache; no database for MVP.
+  Testing: dotnet test with xUnit and Microsoft.Playwright.Xunit E2E suite under tests/DigiDex.Web.E2ETests.
+  Style: simple learning-focused MVP, nullable enabled, implicit usings enabled, avoid heavyweight architecture/dependencies.
+
+strict_tdd: true
+
+testing:
+  detected: 2026-05-25
+  strict_tdd: true
+  strict_tdd_source: "fallback: test runner detected and no explicit strict TDD marker/config existed before OpenSpec init"
+  runner:
+    command: "dotnet test"
+    framework: "xUnit via Microsoft.NET.Test.Sdk"
+  layers:
+    unit:
+      available: true
+      tool: "xUnit via Microsoft.NET.Test.Sdk"
+      notes: "Dedicated unit test project detected at tests/DigiDex.Web.Tests."
+    integration:
+      available: false
+      tool: null
+      notes: "No WebApplicationFactory or HTTP simulation integration suite detected."
+    e2e:
+      available: true
+      tool: "Microsoft.Playwright.Xunit"
+      command: "dotnet test tests/DigiDex.Web.E2ETests"
+  coverage:
+    available: false
+    command: null
+    notes: "No coverlet, dotnet-coverage, or configured coverage command detected."
+  quality:
+    linter:
+      available: false
+      command: null
+    type_checker:
+      available: true
+      command: "dotnet build"
+      notes: "C# compiler with nullable reference types enabled in project files."
+    formatter:
+      available: true
+      command: "dotnet format"
+
+rules:
+  proposal:
+    - Keep proposals scoped to the DigiDex MVP; avoid EF Core, authentication, MediatR, AutoMapper, Redux-style state, or Clean Architecture unless explicitly approved.
+    - Include rollback plan for risky changes.
+  specs:
+    - Use Given/When/Then scenarios and RFC 2119 keywords.
+    - Include loading, empty, error, and success states for data-driven UI requirements.
+  design:
+    - Prefer incremental Blazor components and services over broad rewrites.
+    - Document Digi-API response assumptions with verified evidence before coding against them.
+  tasks:
+    - Keep tasks completable in one focused session and group code, docs, changelog, and verification together.
+  apply:
+    tdd: true
+    test_command: "dotnet test"
+    guidelines:
+      - Follow existing folders under src/DigiDex.Web and tests/.
+      - Use async service methods with CancellationToken for external I/O.
+  verify:
+    test_command: "dotnet test"
+    build_command: "dotnet build"
+    coverage_threshold: 0
+  archive:
+    - Warn before merging destructive deltas.
+    - Preserve archived change folders as audit trail.

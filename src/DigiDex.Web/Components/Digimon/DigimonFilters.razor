@@ -1,0 +1,120 @@
+<div class="filter-card" aria-label="Filtros de Digimon">
+    <div class="filter-header">
+        <span class="control-label">Filtros</span>
+        @if (HasActiveFilters)
+        {
+            <button class="link-button" type="button" @onclick="ClearAsync" disabled="@ControlsDisabled">
+                Limpiar filtros
+            </button>
+        }
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+    {
+        <p class="toolbar-error" role="alert">@ErrorMessage</p>
+    }
+
+    <div class="filter-grid">
+        <label>
+            <span>Nivel</span>
+            <select class="form-control" aria-label="Filtrar por nivel" value="@SelectedLevel" @onchange="LevelChangedAsync" disabled="@ControlsDisabled">
+                <option value="">Todos</option>
+                @foreach (var option in LevelOptions)
+                {
+                    <option value="@option.Name">@option.Name</option>
+                }
+            </select>
+        </label>
+
+        <label>
+            <span>Atributo</span>
+            <select class="form-control" aria-label="Filtrar por atributo" value="@SelectedAttribute" @onchange="AttributeChangedAsync" disabled="@ControlsDisabled">
+                <option value="">Todos</option>
+                @foreach (var option in AttributeOptions)
+                {
+                    <option value="@option.Name">@option.Name</option>
+                }
+            </select>
+        </label>
+
+        <label>
+            <span>X-Antibody</span>
+            <select class="form-control" aria-label="Filtrar por X-Antibody" value="@SelectedXAntibodyValue" @onchange="XAntibodyChangedAsync" disabled="@ControlsDisabled">
+                <option value="">Todos</option>
+                <option value="true">Si</option>
+                <option value="false">No</option>
+            </select>
+        </label>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public IReadOnlyList<DigimonFilterOptionViewModel> LevelOptions { get; set; } = [];
+
+    [Parameter]
+    public IReadOnlyList<DigimonFilterOptionViewModel> AttributeOptions { get; set; } = [];
+
+    [Parameter]
+    public string? SelectedLevel { get; set; }
+
+    [Parameter]
+    public string? SelectedAttribute { get; set; }
+
+    [Parameter]
+    public bool? SelectedXAntibody { get; set; }
+
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+    [Parameter]
+    public string? ErrorMessage { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> OnLevelChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> OnAttributeChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<bool?> OnXAntibodyChanged { get; set; }
+
+    [Parameter]
+    public EventCallback OnClearFilters { get; set; }
+
+    private bool ControlsDisabled => IsLoading || !string.IsNullOrWhiteSpace(ErrorMessage);
+
+    private bool HasActiveFilters => !string.IsNullOrWhiteSpace(SelectedLevel)
+        || !string.IsNullOrWhiteSpace(SelectedAttribute)
+        || SelectedXAntibody is not null;
+
+    private string SelectedXAntibodyValue => SelectedXAntibody?.ToString().ToLowerInvariant() ?? string.Empty;
+
+    private Task LevelChangedAsync(ChangeEventArgs args)
+    {
+        return OnLevelChanged.InvokeAsync(Normalize(args.Value?.ToString()));
+    }
+
+    private Task AttributeChangedAsync(ChangeEventArgs args)
+    {
+        return OnAttributeChanged.InvokeAsync(Normalize(args.Value?.ToString()));
+    }
+
+    private Task XAntibodyChangedAsync(ChangeEventArgs args)
+    {
+        var value = Normalize(args.Value?.ToString());
+        var selected = value is null ? (bool?)null : bool.Parse(value);
+
+        return OnXAntibodyChanged.InvokeAsync(selected);
+    }
+
+    private async Task ClearAsync()
+    {
+        await OnClearFilters.InvokeAsync();
+    }
+
+    private static string? Normalize(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+    }
+}

@@ -4,5 +4,6 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/DigiDex.Web.E2ETests/DigiDex.Web.E2ETests.csproj" />
+    <Project Path="tests/DigiDex.Web.Tests/DigiDex.Web.Tests.csproj" />
   </Folder>
 </Solution>
