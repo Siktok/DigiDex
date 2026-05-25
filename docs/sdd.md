@@ -28,7 +28,7 @@ OpenSpec deja los artefactos de especificación dentro del repositorio, lo que f
 
 - Las próximas fases SDD deben crear cambios bajo `openspec/changes/{change-name}/`.
 - El modo Strict TDD queda activado porque existe runner de tests (`dotnet test`) y no había marcador explícito previo.
-- Las capacidades detectadas son: E2E con xUnit + Playwright, type-check vía `dotnet build` y formato vía `dotnet format`; no se detectó cobertura ni suite unitaria/integración dedicada.
+- Las capacidades detectadas son: E2E con xUnit + Playwright, tests unitarios con xUnit en `tests/DigiDex.Web.Tests`, type-check vía `dotnet build` y formato vía `dotnet format`; no se detectó cobertura.
 
 ## Mantenimiento
 
