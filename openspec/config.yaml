@@ -23,9 +23,9 @@ testing:
     framework: "xUnit via Microsoft.NET.Test.Sdk"
   layers:
     unit:
-      available: false
-      tool: null
-      notes: "No dedicated unit test project detected."
+      available: true
+      tool: "xUnit via Microsoft.NET.Test.Sdk"
+      notes: "Dedicated unit test project detected at tests/DigiDex.Web.Tests."
     integration:
       available: false
       tool: null
