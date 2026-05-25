@@ -22,7 +22,7 @@ Strict TDD, artifact store `openspec`, workload strategy `size-exception`.
 - [x] 4.2 Preserve filtered empty state separately from load failures.
 - [x] 4.3 Extend Playwright smoke coverage for selecting `Child` and opening detail flow coverage through existing/detail assertions.
 - [x] 5.1 Refactor filter normalization and clear behavior while keeping page-local state.
-- [x] 5.2 Update docs, changelog, and bump version to `0.5.0`.
+- [x] 5.2 Update docs, changelog, and bump version to `0.5.1`.
 - [x] 5.3 Run `dotnet test` and `dotnet build` successfully.
 
 ## TDD Cycle Evidence
