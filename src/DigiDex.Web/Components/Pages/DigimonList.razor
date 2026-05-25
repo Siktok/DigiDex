@@ -131,8 +131,14 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadFilterOptionsAsync();
+        _ = LoadFilterOptionsAndRefreshAsync();
         await LoadCurrentModeAsync();
+    }
+
+    private async Task LoadFilterOptionsAndRefreshAsync()
+    {
+        await LoadFilterOptionsAsync();
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task SearchAsync(string? term)
